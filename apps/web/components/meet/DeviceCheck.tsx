@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   IconMicrophone,
   IconMicrophoneOff,
@@ -11,8 +11,8 @@ import {
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
+import { Input } from "@workspace/ui/components/input";
 import {
   Tooltip,
   TooltipContent,
@@ -20,6 +20,133 @@ import {
 } from "@workspace/ui/components/tooltip";
 import Room from "./Room";
 import { useHelixque } from "@workspace/state";
+import { useSearchParams } from "next/navigation";
+
+function PreferencesPanel() {
+  const params = useSearchParams();
+  const identity = (params.get("identity") as "anonymous" | "exposed") || "exposed";
+  const { setJoined } = useHelixque();
+
+  const [mode, setMode] = useState<"strict" | "loose">("strict");
+  const [experience, setExperience] = useState<string>("");
+  const [techStack, setTechStack] = useState<string>("");
+  const [interests, setInterests] = useState<string>("");
+
+  return (
+    <div className="h-full flex flex-col bg-card/80 backdrop-blur-xl overflow-hidden border border-border/50 rounded-2xl shadow-2xl shadow-black/5 group hover:border-border/70 transition-all duration-300">
+      {/* Header */}
+      <div className="border-b border-border/50 p-5 flex-shrink-0 bg-background/95 backdrop-blur-sm">
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold tracking-tight">
+            Preferences
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {identity === "anonymous" 
+              ? "🔒 Connecting anonymously" 
+              : "✨ Name auto-fetched from profile"}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-5 space-y-4 [scrollbar-width:thin] [scrollbar-color:hsl(var(--border))_transparent]">
+        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          <div className="space-y-2.5 group/field">
+            <Label className="text-sm font-semibold flex items-center gap-2">
+              Mode
+              <span className="text-xs text-muted-foreground font-normal">(matching preference)</span>
+            </Label>
+            <select
+              value={mode}
+              onChange={(e) => setMode(e.target.value as "strict" | "loose")}
+              className="h-11 w-full rounded-xl border border-border/50 bg-background/80 backdrop-blur-sm px-4 text-sm font-medium focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 shadow-sm hover:border-border cursor-pointer appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDEyIDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEgMS41TDYgNi41TDExIDEuNSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=')] bg-[length:12px] bg-[position:right_1rem_center] bg-no-repeat pr-10"
+            >
+              <option value="strict">Strict - Exact match required</option>
+              <option value="loose">Loose - Flexible matching</option>
+            </select>
+          </div>
+
+          <div className="space-y-2.5 group/field">
+            <Label className="text-sm font-semibold flex items-center gap-2">
+              Experience
+              <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+            </Label>
+            <div className="relative">
+              <Input
+                value={experience}
+                onChange={(e) => setExperience(e.target.value)}
+                placeholder="e.g., 3 years in React"
+                className="h-11 text-sm bg-background/80 backdrop-blur-sm border-border/50 focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 placeholder:text-muted-foreground/50 shadow-sm hover:border-border rounded-xl px-4 group-hover/field:shadow-md"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2.5 group/field">
+            <Label className="text-sm font-semibold flex items-center gap-2">
+              Tech Stack
+              <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+            </Label>
+            <div className="relative">
+              <Input
+                value={techStack}
+                onChange={(e) => setTechStack(e.target.value)}
+                placeholder="e.g., React, Node.js, TypeScript"
+                className="h-11 text-sm bg-background/80 backdrop-blur-sm border-border/50 focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 placeholder:text-muted-foreground/50 shadow-sm hover:border-border rounded-xl px-4 group-hover/field:shadow-md"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2.5 group/field">
+            <Label className="text-sm font-semibold flex items-center gap-2">
+              Interest Groups
+              <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+            </Label>
+            <div className="relative">
+              <Input
+                value={interests}
+                onChange={(e) => setInterests(e.target.value)}
+                placeholder="e.g., WebRTC, AI, Open Source"
+                className="h-11 text-sm bg-background/80 backdrop-blur-sm border-border/50 focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 placeholder:text-muted-foreground/50 shadow-sm hover:border-border rounded-xl px-4 group-hover/field:shadow-md"
+              />
+            </div>
+          </div>
+        </form>
+
+        {identity === "anonymous" && (
+          <div className="rounded-lg bg-muted/60 p-3 text-xs ring-1 ring-border">
+            <div className="flex items-start gap-2.5">
+              <span className="text-base">🔒</span>
+              <div>
+                <div className="font-semibold text-foreground">Anonymous Mode</div>
+                <div className="text-muted-foreground text-xs mt-0.5">
+                  Your identity will remain hidden during this session
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="border-t border-border/50 p-5 space-y-3 flex-shrink-0 bg-background/95 backdrop-blur-sm">
+        <Button
+          type="button"
+          onClick={() => setJoined(true)}
+          className="h-11 w-full rounded-lg font-medium transition-all duration-200 bg-primary hover:bg-primary/90"
+        >
+          <span className="flex items-center justify-center gap-2">
+            Join Meeting
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </span>
+        </Button>
+        <p className="text-center text-xs text-muted-foreground">
+          By joining, you agree to our terms and privacy policy
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function DeviceCheck() {
   const {
@@ -166,154 +293,129 @@ export default function DeviceCheck() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-950 px-6 py-8">
-      <div className="mx-auto w-full max-w-5xl">
-        <div className="mb-12 space-y-1 text-center">
-          <h1 className="text-4xl font-bold text-white">Ready to connect?</h1>
-          <p className="text-sm text-neutral-400">
-            Check your camera and microphone before joining
-          </p>
+    <div className="flex h-[90vh] overflow-hidden gap-3 relative">
+      {/* Video Preview - Left Side */}
+      <div className="flex-1 flex flex-col bg-card/80 backdrop-blur-xl overflow-hidden border border-border/50 rounded-xl shadow-sm relative z-10 transition-all duration-200">
+        <div className="border-b border-border/50 p-5 flex-shrink-0 bg-background/95 backdrop-blur-sm">
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold tracking-tight">
+              Ready to connect?
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Check your devices before joining
+            </p>
+          </div>
         </div>
 
-        <div className="grid items-stretch gap-8 lg:grid-cols-2">
-          <div className="flex h-full flex-col space-y-4">
-            <div className="relative flex-1 overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
-              <div className="relative aspect-video w-full bg-black">
-                {videoOn ? (
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black">
-                    <IconUser className="h-16 w-16 text-white/70" />
+        <div className="flex-1 flex flex-col p-5 gap-4">
+          <div className="relative flex-1 overflow-hidden rounded-lg border border-border/50 bg-black shadow-sm group/video">
+            <div className="relative w-full h-full">
+              {videoOn ? (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-muted/30 backdrop-blur-sm p-8 rounded-lg">
+                    <IconUser className="h-16 w-16 text-muted-foreground/40" />
                   </div>
-                )}
+                </div>
+              )}
 
-                <div className="absolute bottom-3 left-3 flex items-center gap-2">
-                  <span className="rounded-md bg-black/60 px-2 py-1 text-xs text-white">
-                    {name || "You"}
+              {/* Video info overlay */}
+              <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                <span className="rounded-lg bg-black/60 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white ring-1 ring-white/10">
+                  {name || "You"}
+                </span>
+                {!audioOn && (
+                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-red-500/80 backdrop-blur-sm px-2.5 py-1.5 text-xs font-medium text-white ring-1 ring-red-400/20">
+                    <IconMicrophoneOff className="h-3 w-3" />
+                    Muted
                   </span>
-                  {!audioOn && (
-                    <span className="inline-flex items-center gap-1 rounded bg-red-600/80 px-1.5 py-0.5 text-xs text-white">
-                      <IconMicrophoneOff className="h-3 w-3" />
-                      muted
-                    </span>
-                  )}
-                </div>
+                )}
               </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-2">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    onClick={() => setAudioOn((value) => !value)}
-                    variant="ghost"
-                    size="icon-lg"
-                    className={`h-11 w-11 rounded-full ${
-                      audioOn
-                        ? "bg-white/10 text-white hover:bg-white/20"
-                        : "bg-red-600 text-white hover:bg-red-500"
-                    }`}
-                  >
-                    {audioOn ? (
-                      <IconMicrophone className="h-5 w-5" />
-                    ) : (
-                      <IconMicrophoneOff className="h-5 w-5" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {audioOn ? "Turn off microphone" : "Turn on microphone"}
-                </TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    onClick={() => setVideoOn((value) => !value)}
-                    variant="ghost"
-                    size="icon-lg"
-                    className={`h-11 w-11 rounded-full ${
-                      videoOn
-                        ? "bg-white/10 text-white hover:bg-white/20"
-                        : "bg-red-600 text-white hover:bg-red-500"
-                    }`}
-                  >
-                    {videoOn ? (
-                      <IconVideo className="h-5 w-5" />
-                    ) : (
-                      <IconVideoOff className="h-5 w-5" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {videoOn ? "Turn off camera" : "Turn on camera"}
-                </TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    onClick={getCam}
-                    variant="ghost"
-                    size="icon-lg"
-                    className="h-11 w-11 rounded-full bg-white/10 text-white hover:bg-white/20"
-                  >
-                    <IconRefresh className="h-5 w-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Refresh devices</TooltipContent>
-              </Tooltip>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="rounded-2xl border border-white/10 bg-neutral-900/50 p-8 shadow-[0_10px_40px_rgba(0,0,0,0.5)] backdrop-blur">
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  <h2 className="text-2xl font-semibold text-white">
-                    Join the conversation
-                  </h2>
-                  <div className="space-y-2">
-                    <Label
-                      htmlFor="display-name"
-                      className="text-sm text-gray-300"
-                    >
-                      What should we call you?
-                    </Label>
-                    <Input
-                      id="display-name"
-                      value={name}
-                      onChange={(event) => setName(event.target.value)}
-                      placeholder="Enter your name"
-                      className="h-12 rounded-xl border-white/10 bg-neutral-800/50 text-white placeholder:text-neutral-500"
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    onClick={() => setJoined(true)}
-                    disabled={!name.trim()}
-                    className="h-12 w-full rounded-xl bg-white text-black hover:bg-white/90 disabled:opacity-50"
-                  >
-                    Join Meeting
-                  </Button>
-                  <p className="text-center text-xs text-neutral-500">
-                    By joining, you agree to our terms of service and privacy
-                    policy
-                  </p>
-                </div>
-              </div>
-            </div>
+          {/* Control buttons */}
+          <div className="flex items-center justify-center gap-3 pb-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  onClick={() => setAudioOn((value) => !value)}
+                  variant="ghost"
+                  size="icon-lg"
+                  className={`h-12 w-12 rounded-full transition-all duration-200 ring-1 ${
+                    audioOn
+                      ? "bg-muted text-foreground hover:bg-muted/80 ring-border/50 hover:ring-border"
+                      : "bg-red-500 text-white hover:bg-red-600 ring-red-400/20"
+                  }`}
+                >
+                  {audioOn ? (
+                    <IconMicrophone className="h-5 w-5" />
+                  ) : (
+                    <IconMicrophoneOff className="h-5 w-5" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {audioOn ? "Turn off microphone" : "Turn on microphone"}
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  onClick={() => setVideoOn((value) => !value)}
+                  variant="ghost"
+                  size="icon-lg"
+                  className={`h-12 w-12 rounded-full transition-all duration-200 ring-1 ${
+                    videoOn
+                      ? "bg-muted text-foreground hover:bg-muted/80 ring-border/50 hover:ring-border"
+                      : "bg-red-500 text-white hover:bg-red-600 ring-red-400/20"
+                  }`}
+                >
+                  {videoOn ? (
+                    <IconVideo className="h-5 w-5" />
+                  ) : (
+                    <IconVideoOff className="h-5 w-5" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {videoOn ? "Turn off camera" : "Turn on camera"}
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  onClick={getCam}
+                  variant="ghost"
+                  size="icon-lg"
+                  className="h-12 w-12 rounded-full bg-muted text-foreground hover:bg-muted/80 ring-1 ring-border/50 hover:ring-border transition-all duration-200"
+                >
+                  <IconRefresh className="h-5 w-5 transition-transform hover:rotate-180 duration-500" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Refresh devices
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
+      </div>
+
+      {/* Preferences Panel - Right Side */}
+      <div className="w-[360px] flex-shrink-0 relative z-10">
+        <PreferencesPanel />
       </div>
     </div>
   );
