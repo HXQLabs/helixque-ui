@@ -156,7 +156,6 @@ export default function DeviceCheck() {
     joined,
     videoOn,
     audioOn,
-    setName,
     setLocalAudioTrack,
     setLocalVideoTrack,
     setJoined,
@@ -172,10 +171,14 @@ export default function DeviceCheck() {
   const releaseTracks = () => {
     try {
       localAudioTrackRef.current?.stop();
-    } catch {}
+    } catch {
+      // ignore stopping audio track errors
+    }
     try {
       localVideoTrackRef.current?.stop();
-    } catch {}
+    } catch {
+      // ignore stopping video track errors
+    }
   };
 
   const getCam = async () => {
@@ -260,12 +263,10 @@ export default function DeviceCheck() {
       if (permissionStatus) permissionStatus.onchange = null;
       releaseTracks();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     getCam();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoOn, audioOn]);
 
   useEffect(() => {

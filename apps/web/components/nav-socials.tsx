@@ -1,7 +1,6 @@
 "use client";
 
 import { type LucideIcon } from "lucide-react";
-import { Badge } from "@workspace/ui/components/badge";
 
 import {
   SidebarGroup,

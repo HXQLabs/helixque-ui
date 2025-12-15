@@ -36,7 +36,7 @@ export function CommandMenu() {
 
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, []);
+  }, [setOpen]);
 
   const handleSettingsClick = () => {
     setOpen(false);
