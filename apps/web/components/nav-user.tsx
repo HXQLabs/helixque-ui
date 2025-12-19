@@ -1,6 +1,6 @@
 "use client";
-
 import * as React from "react";
+import Link from "next/link";
 import {
   BadgeCheck,
   Bell,
@@ -9,6 +9,7 @@ import {
   LogOut,
   Settings,
   Sparkles,
+  UserIcon,
 } from "lucide-react";
 import { SettingsDialog } from "./settings-dialog";
 
@@ -92,8 +93,12 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            <DropdownMenuGroup> 
               <DropdownMenuItem>
+                <UserIcon />
+                <Link href={"/dashboard/profile"}>Profile</Link>
+              </DropdownMenuItem>
+               <DropdownMenuItem>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
