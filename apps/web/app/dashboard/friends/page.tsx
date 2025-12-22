@@ -335,12 +335,12 @@ function FriendCard({ friend, type, onAction }: FriendCardProps) {
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-card hover:shadow-sm transition-shadow duration-200 border border-border/50">
+    <div className="flex items-center justify-between gap-4 p-3 md:p-4 rounded-xl bg-card/60 backdrop-blur-sm hover:bg-card/80 hover:shadow-sm transition-all duration-200 border border-border/40 hover:border-border/60 hover:scale-[1.01] active:scale-[0.99]">
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <div className="relative flex-shrink-0">
-          <Avatar className="h-12 w-12">
-            <AvatarImage src={friend.avatar} alt={friend.name} />
-            <AvatarFallback>
+          <Avatar className="h-11 w-11 ring-1 ring-border/50 transition-all group-hover:ring-primary/30">
+            <AvatarImage src={friend.avatar} alt={friend.name} className="object-cover" />
+            <AvatarFallback className="text-sm font-medium bg-gradient-to-br from-primary/10 to-primary/5">
               {friend.name
                 .split(" ")
                 .map((n: string) => n[0])
@@ -348,13 +348,13 @@ function FriendCard({ friend, type, onAction }: FriendCardProps) {
             </AvatarFallback>
           </Avatar>
           {isOnline && (
-            <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background bg-green-500" />
+            <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-background" />
           )}
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-sm leading-tight">{friend.name}</h3>
-          <p className="text-xs text-muted-foreground truncate">
+          <h3 className="font-semibold text-sm leading-tight text-foreground/90">{friend.name}</h3>
+          <p className="text-xs text-muted-foreground/80 truncate">
             {friend.displayName}
           </p>
           <div className="mt-1">{renderMeta()}</div>
@@ -447,139 +447,150 @@ export default function FriendsPage() {
   }, [filteredData, currentPage]);
 
   return (
-    <div className="flex flex-col gap-6 pb-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold tracking-tight">Friends</h1>
-        <p className="text-muted-foreground mt-1">
-          Connect with friends and manage your network
-        </p>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-2 border-b border-border">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-3 text-sm font-medium transition-colors relative ${
-              activeTab === tab.id
-                ? "text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {tab.label}
-            <span className="ml-2 inline-flex items-center justify-center h-5 w-5 rounded-full bg-muted text-xs font-semibold">
-              {tab.count}
-            </span>
-            {activeTab === tab.id && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Search Input */}
-      <div className="relative">
-        <IconSearch className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
-        <Input
-          placeholder="Search friends..."
-          className="pl-9"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setCurrentPage(1);
-          }}
-        />
-      </div>
-
-      {/* Content */}
-      <div className="space-y-3">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <SpinnerCustom />
-            <p className="text-sm text-muted-foreground mt-4">
-              Loading friends...
+    <div className="flex h-[90vh] overflow-hidden bg-background/95 backdrop-blur-sm gap-0 md:gap-3">
+      <div className="w-full flex flex-col bg-card/50 backdrop-blur-xl overflow-hidden md:rounded-xl shadow-sm transition-all duration-300">
+        {/* Header */}
+        <div className="border-b border-border/40 p-3 md:p-5 space-y-3 md:space-y-4 flex-shrink-0 bg-gradient-to-b from-background/80 to-transparent">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Friends</h1>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Connect with friends and manage your network
             </p>
           </div>
-        ) : paginatedData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <IconUserPlus className="h-12 w-12 text-muted-foreground/30 mb-4" />
-            <h3 className="font-semibold text-muted-foreground">
-              {searchQuery
-                ? "No results found"
-                : activeTab === "friends"
-                  ? "No friends yet"
-                  : activeTab === "sent"
-                    ? "No pending requests"
-                    : "No incoming requests"}
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              {searchQuery
-                ? "Try adjusting your search"
-                : activeTab === "friends"
-                  ? "Start connecting with people to see them here"
-                  : activeTab === "sent"
-                    ? "All your requests have been responded to"
-                    : "You're all caught up!"}
-            </p>
-          </div>
-        ) : (
-          <>
-            {paginatedData.map((friend) => (
-              <FriendCard
-                key={friend.id}
-                friend={friend}
-                type={activeTab}
-                onAction={handleAction}
-              />
+
+          {/* Tabs */}
+          <div className="flex gap-1 bg-muted/30 p-1 rounded-lg">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <span className="flex items-center justify-center gap-2">
+                  {tab.label}
+                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+                    activeTab === tab.id
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}>
+                    {tab.count}
+                  </span>
+                </span>
+              </button>
             ))}
-          </>
-        )}
-      </div>
-
-      {/* Pagination */}
-      {!isLoading && filteredData.length > 0 && (
-        <div className="flex items-center justify-between pt-4 border-t border-border">
-          <div className="text-sm text-muted-foreground">
-            Showing{" "}
-            {Math.min(
-              (currentPage - 1) * itemsPerPage + 1,
-              filteredData.length,
-            )}{" "}
-            to {Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}
-            {filteredData.length}
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              <IconChevronLeft className="h-4 w-4 mr-1" />
-              Previous
-            </Button>
-
-            <div className="px-3 py-1 text-sm font-medium">
-              Page {currentPage} of {totalPages || 1}
-            </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage >= totalPages}
-            >
-              Next
-              <IconChevronRight className="h-4 w-4 ml-1" />
-            </Button>
+          {/* Search Input */}
+          <div className="relative group">
+            <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground/70 transition-colors group-hover:text-muted-foreground pointer-events-none" />
+            <Input
+              placeholder="Search friends..."
+              className="pl-9 pr-4 text-sm h-10 bg-background/60 border-border/50 focus:bg-background transition-colors placeholder:text-muted-foreground/50"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
           </div>
         </div>
-      )}
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 [scrollbar-width:thin] [scrollbar-color:hsl(var(--muted))_transparent]">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <SpinnerCustom />
+              <p className="text-sm text-muted-foreground mt-4">
+                Loading friends...
+              </p>
+            </div>
+          ) : paginatedData.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <IconUserPlus className="h-12 w-12 text-muted-foreground/30 mb-4" />
+              <h3 className="font-semibold text-muted-foreground">
+                {searchQuery
+                  ? "No results found"
+                  : activeTab === "friends"
+                    ? "No friends yet"
+                    : activeTab === "sent"
+                      ? "No pending requests"
+                      : "No incoming requests"}
+              </h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                {searchQuery
+                  ? "Try adjusting your search"
+                  : activeTab === "friends"
+                    ? "Start connecting with people to see them here"
+                    : activeTab === "sent"
+                      ? "All your requests have been responded to"
+                      : "You're all caught up!"}
+              </p>
+            </div>
+          ) : (
+            <>
+              {paginatedData.map((friend) => (
+                <FriendCard
+                  key={friend.id}
+                  friend={friend}
+                  type={activeTab}
+                  onAction={handleAction}
+                />
+              ))}
+            </>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {!isLoading && filteredData.length > 0 && (
+          <div className="border-t border-border/40 p-3 md:p-4 flex items-center flex-shrink-0 bg-gradient-to-t from-background/80 to-transparent">
+            <div className="flex-1"></div>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <IconChevronLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
+
+              <div className="px-3 py-1 text-sm font-medium">
+                Page {currentPage} of {totalPages || 1}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage >= totalPages}
+              >
+                Next
+                <IconChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+
+            <div className="flex-1 flex justify-end">
+              <div className="text-sm text-muted-foreground">
+                Showing{" "}
+                {Math.min(
+                  (currentPage - 1) * itemsPerPage + 1,
+                  filteredData.length,
+                )}{" "}
+                to {Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}
+                {filteredData.length}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
