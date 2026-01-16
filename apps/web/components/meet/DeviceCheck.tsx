@@ -18,7 +18,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
-import Room from "./Room";
+import Room from "./RTC/Room";
 import { useHelixque } from "@workspace/state";
 import { useSearchParams } from "next/navigation";
 
