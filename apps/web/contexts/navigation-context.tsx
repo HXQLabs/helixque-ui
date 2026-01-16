@@ -7,6 +7,7 @@ interface NavigationContextType {
   activeSection: string;
   activeSubSection: string | null;
   setActiveSection: (section: string, subSection?: string | null) => void;
+  setActiveSubSection: (subSection: string | null) => void;
 }
 
 const NavigationContext = React.createContext<
@@ -35,7 +36,7 @@ export function NavigationProvider({
 
   return (
     <NavigationContext.Provider
-      value={{ activeSection, activeSubSection, setActiveSection }}
+      value={{ activeSection, activeSubSection, setActiveSection, setActiveSubSection }}
     >
       {children}
     </NavigationContext.Provider>

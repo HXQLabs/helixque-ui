@@ -87,32 +87,44 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/upgrade" className="w-full cursor-pointer">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Upgrade to Pro
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup> 
-              <DropdownMenuItem>
-                <UserIcon />
-                <Link href={"/dashboard/profile"}>Profile</Link>
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/edit-profile" className="w-full cursor-pointer">
+                  <UserIcon className="mr-2 h-4 w-4" />
+                  Profile
+                </Link>
               </DropdownMenuItem>
-               <DropdownMenuItem>
-                <BadgeCheck />
-                Account
+               <DropdownMenuItem asChild>
+                 <Link href="/dashboard/settings?tab=account" className="w-full cursor-pointer">
+                  <BadgeCheck className="mr-2 h-4 w-4" />
+                  Account
+                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
+              <DropdownMenuItem asChild>
+                 <Link href="/dashboard/billing" className="w-full cursor-pointer">
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Billing
+                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
+              <DropdownMenuItem asChild>
+                 <Link href="/dashboard/settings?tab=notifications" className="w-full cursor-pointer">
+                  <Bell className="mr-2 h-4 w-4" />
+                  Notifications
+                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-                <Settings />
-                Settings
+              <DropdownMenuItem asChild>
+                 <Link href="/dashboard/settings" className="w-full cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
