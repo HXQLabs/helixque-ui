@@ -171,7 +171,7 @@ export const GanttExample: React.FC<GanttExampleProps> = ({
       onAddItem={handleAddMeeting}
       range="monthly"
       zoom={35}
-      className={`${className} flex h-full max-h-full overflow-hidden`}
+      className={`${className} flex h-full max-h-full w-full overflow-hidden`}
     >
       <GanttSidebar className="w-36 flex-shrink-0 border-r border-border/50">
         {Object.entries(sortedGroupedMeetings).map(([type, meetingList]) => (
