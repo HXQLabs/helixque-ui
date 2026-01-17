@@ -27,6 +27,8 @@ import {
   UserAvailabilitySchema,
   UserSchema,
 } from "@/lib/schemas";
+import { ROLES, DOMAINS, TECH_STACK, SPOKEN_LANGUAGES } from "@/lib/constants";
+import { Combobox } from "@/components/ui/combobox";
 import { useNavigation } from "@/contexts/navigation-context";
 
 // Combined schema for the form
@@ -40,39 +42,40 @@ const EditProfileFormSchema = z.object({
 
 type EditProfileFormValues = z.infer<typeof EditProfileFormSchema>;
 
-// Mock data
-const defaultValues: EditProfileFormValues = {
-  displayName: "Alex Morgan",
-  email: "alex@helixque.com",
-  profile: {
-    language: "TypeScript",
-    role: "Senior Frontend Engineer",
-    domain: "Fintech",
-    techStack: ["React", "Next.js", "Node.js", "TailwindCSS"],
-    experience: "5-8",
-  },
-  availability: {
-    timezone: "PST (UTC-8)",
-    workingHours: "09:00 - 17:00",
-    status: "Available",
-  },
-};
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function EditProfilePage() {
   const { setActiveSection } = useNavigation();
+  const { data: session, update: updateSession } = useSession();
+  const router = useRouter();
   
   React.useEffect(() => {
     setActiveSection("Account", "Edit Profile");
   }, [setActiveSection]);
 
-  const [avatarUrl, setAvatarUrl] = React.useState(
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"
-  );
+  const [avatarUrl, setAvatarUrl] = React.useState("");
   const [isSaving, setIsSaving] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const form = useForm<EditProfileFormValues>({
     resolver: zodResolver(EditProfileFormSchema),
-    defaultValues,
+    defaultValues: {
+      displayName: "",
+      email: "",
+      profile: {
+        languages: [],
+        role: "",
+        domain: "",
+        techStack: [],
+        experience: "0-1",
+      },
+      availability: {
+        timezone: "",
+        workingHours: "",
+        status: "",
+      },
+    },
     mode: "onChange",
   });
 
@@ -81,25 +84,54 @@ export default function EditProfilePage() {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = form;
 
+  // Fetch user data
+  React.useEffect(() => {
+    const fetchUserData = async () => {
+      if (session?.user?.id) {
+        try {
+          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
+          const response = await fetch(`${backendUrl}/users/${session.user.id}`);
+          if (response.ok) {
+            const userData = await response.json();
+            
+            // Map backend data to form structure
+            reset({
+              displayName: userData.username || session.user.name || "",
+              email: userData.email || session.user.email || "",
+              profile: {
+                languages: userData.languages || [],
+                role: userData.role || "",
+                domain: userData.domain || "",
+                techStack: userData.skills || [],
+                experience: userData.yearsExperience || "0-1",
+              },
+              availability: {
+                timezone: userData.preferences?.timezone || "",
+                workingHours: userData.preferences?.workingHours || "",
+                status: userData.status || "ONLINE",
+              },
+            });
+            
+            setAvatarUrl(userData.imageUrl || session.user.image || "");
+          }
+        } catch (error) {
+          console.error("Failed to fetch user data:", error);
+          toast.error("Failed to load profile data");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [session, reset]);
+
   const techStack = watch("profile.techStack");
   const selectedDomain = watch("profile.domain");
-  // Predefined domains
-  const domains = [
-    "Fintech",
-    "Edtech",
-    "HealthTech",
-    "E-commerce",
-    "SaaS",
-    "Artificial Intelligence",
-    "Cybersecurity", 
-    "Blockchain",
-    "Gaming",
-    "Other"
-  ];
-
   const [newTech, setNewTech] = React.useState("");
 
   const onSubmit = async (data: EditProfileFormValues) => {
@@ -114,18 +146,61 @@ export default function EditProfilePage() {
     delete (finalData as any).customDomain;
 
     setIsSaving(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Form Data:", finalData);
-    toast.success("Profile updated successfully");
-    setIsSaving(false);
+    try {
+        const userId = session?.user?.id;
+        if (!userId) {
+            toast.error("You must be logged in to save changes");
+            return;
+        }
+
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
+        const response = await fetch(`${backendUrl}/users/${userId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: finalData.displayName,
+                email: finalData.email,
+                domain: finalData.profile.domain,
+                role: finalData.profile.role,
+                skills: finalData.profile.techStack,
+                languages: finalData.profile.languages,
+                yearsExperience: finalData.profile.experience,
+                status: finalData.availability.status,
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to update profile");
+        }
+
+        // Update session locally
+        await updateSession({
+            isOnboarded: true,
+            user: {
+                ...session.user,
+                name: finalData.displayName,
+                // image: avatarUrl // If we handled image upload
+            }
+        });
+
+        toast.success("Profile updated successfully");
+        router.refresh();
+    } catch (error) {
+        console.error(error);
+        toast.error("Failed to save changes");
+    } finally {
+        setIsSaving(false);
+    }
   };
 
   const handleAddTech = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && newTech.trim()) {
       e.preventDefault();
-      if (!techStack.includes(newTech.trim())) {
-        setValue("profile.techStack", [...techStack, newTech.trim()]);
+      if (!techStack?.includes(newTech.trim())) {
+        const currentStack = techStack || [];
+        setValue("profile.techStack", [...currentStack, newTech.trim()]);
       }
       setNewTech("");
     }
@@ -134,7 +209,7 @@ export default function EditProfilePage() {
   const removeTech = (tech: string) => {
     setValue(
       "profile.techStack",
-      techStack.filter((t) => t !== tech)
+      (techStack || []).filter((t) => t !== tech)
     );
   };
 
@@ -224,11 +299,16 @@ export default function EditProfilePage() {
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="role">Current Role</Label>
-                <Input
+                <select
                   id="profile.role"
                   {...register("profile.role")}
-                  placeholder="e.g. Senior Frontend Engineer"
-                />
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="" disabled>Select your role</option>
+                  {ROLES.map((role) => (
+                    <option key={role} value={role}>{role}</option>
+                  ))}
+                </select>
                 {errors.profile?.role && (
                   <p className="text-destructive text-sm">{errors.profile.role.message}</p>
                 )}
@@ -243,7 +323,7 @@ export default function EditProfilePage() {
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <option value="" disabled>Select a domain</option>
-                    {domains.map((domain) => (
+                    {DOMAINS.map((domain) => (
                       <option key={domain} value={domain}>{domain}</option>
                     ))}
                   </select>
@@ -293,21 +373,34 @@ export default function EditProfilePage() {
 
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="language">Primary Skills</Label>
-                <Input
-                  id="profile.language"
-                  {...register("profile.language")}
-                  placeholder="e.g. TypeScript, Python"
+                <Label htmlFor="languages">Spoken Languages</Label>
+                <Combobox
+                  options={SPOKEN_LANGUAGES}
+                  value={watch("profile.languages") || []}
+                  onChange={(val) => setValue("profile.languages", val as string[], { shouldValidate: true })}
+                  placeholder="Select languages"
+                  searchPlaceholder="Search language..."
+                  multiple
+                  allowCustom
                 />
-                {errors.profile?.language && (
-                  <p className="text-destructive text-sm">{errors.profile.language.message}</p>
+                {errors.profile?.languages && (
+                  <p className="text-destructive text-sm">{errors.profile.languages.message}</p>
                 )}
               </div>
 
               <div className="grid gap-2">
                 <Label>Skills</Label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {techStack.map((tech) => (
+                <Combobox
+                  options={TECH_STACK}
+                  value={watch("profile.techStack") || []}
+                  onChange={(val) => setValue("profile.techStack", val as string[], { shouldValidate: true })}
+                  placeholder="Select skills"
+                  searchPlaceholder="Search skills..."
+                  multiple
+                  allowCustom
+                />
+                <div className="flex flex-wrap gap-2 mb-2 mt-2">
+                  {techStack?.map((tech) => (
                     <Badge key={tech} variant="secondary" className="gap-1">
                       {tech}
                       <span
@@ -319,12 +412,6 @@ export default function EditProfilePage() {
                     </Badge>
                   ))}
                 </div>
-                <Input
-                  value={newTech}
-                  onChange={(e) => setNewTech(e.target.value)}
-                  onKeyDown={handleAddTech}
-                  placeholder="Type skill and press Enter..."
-                />
                 {errors.profile?.techStack && (
                   <p className="text-destructive text-sm">{errors.profile.techStack.message}</p>
                 )}

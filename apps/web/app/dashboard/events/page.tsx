@@ -1,7 +1,7 @@
 "use client";
 
 import { useNavigation } from "@/contexts/navigation-context";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
@@ -51,7 +51,7 @@ const EVENTS: Event[] = [
   },
 ];
 
-export default function EventsPage() {
+function EventsPageContent() {
   const { setActiveSection, setActiveSubSection } = useNavigation();
 
   useEffect(() => {
@@ -101,5 +101,13 @@ export default function EventsPage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function EventsPage() {
+  return (
+    <React.Suspense fallback={<div>Loading events...</div>}>
+      <EventsPageContent />
+    </React.Suspense>
   );
 }

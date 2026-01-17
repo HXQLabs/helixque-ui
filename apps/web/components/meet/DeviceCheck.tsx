@@ -11,8 +11,6 @@ import {
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@workspace/ui/components/button";
-import { Label } from "@workspace/ui/components/label";
-import { Input } from "@workspace/ui/components/input";
 import {
   Tooltip,
   TooltipContent,
@@ -21,132 +19,10 @@ import {
 import Room from "./RTC/Room";
 import { useHelixque } from "@workspace/state";
 import { useSearchParams } from "next/navigation";
-
-function PreferencesPanel() {
-  const params = useSearchParams();
-  const identity = (params.get("identity") as "anonymous" | "exposed") || "exposed";
-  const { setJoined } = useHelixque();
-
-  const [mode, setMode] = useState<"strict" | "loose">("strict");
-  const [experience, setExperience] = useState<string>("");
-  const [techStack, setTechStack] = useState<string>("");
-  const [interests, setInterests] = useState<string>("");
-
-  return (
-    <div className="h-full flex flex-col bg-card/80 backdrop-blur-xl overflow-hidden border border-border/50 rounded-2xl shadow-2xl shadow-black/5 group hover:border-border/70 transition-all duration-300">
-      {/* Header */}
-      <div className="border-b border-border/50 p-5 flex-shrink-0 bg-background/95 backdrop-blur-sm">
-        <div className="space-y-1">
-          <h2 className="text-xl font-semibold tracking-tight">
-            Preferences
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            {identity === "anonymous" 
-              ? "🔒 Connecting anonymously" 
-              : "✨ Name auto-fetched from profile"}
-          </p>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-5 space-y-4 [scrollbar-width:thin] [scrollbar-color:hsl(var(--border))_transparent]">
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-          <div className="space-y-2.5 group/field">
-            <Label className="text-sm font-semibold flex items-center gap-2">
-              Mode
-              <span className="text-xs text-muted-foreground font-normal">(matching preference)</span>
-            </Label>
-            <select
-              value={mode}
-              onChange={(e) => setMode(e.target.value as "strict" | "loose")}
-              className="h-11 w-full rounded-xl border border-border/50 bg-background/80 backdrop-blur-sm px-4 text-sm font-medium focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 shadow-sm hover:border-border cursor-pointer appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDEyIDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEgMS41TDYgNi41TDExIDEuNSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=')] bg-[length:12px] bg-[position:right_1rem_center] bg-no-repeat pr-10"
-            >
-              <option value="strict">Strict - Exact match required</option>
-              <option value="loose">Loose - Flexible matching</option>
-            </select>
-          </div>
-
-          <div className="space-y-2.5 group/field">
-            <Label className="text-sm font-semibold flex items-center gap-2">
-              Experience
-              <span className="text-xs text-muted-foreground font-normal">(optional)</span>
-            </Label>
-            <div className="relative">
-              <Input
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                placeholder="e.g., 3 years in React"
-                className="h-11 text-sm bg-background/80 backdrop-blur-sm border-border/50 focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 placeholder:text-muted-foreground/50 shadow-sm hover:border-border rounded-xl px-4 group-hover/field:shadow-md"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2.5 group/field">
-            <Label className="text-sm font-semibold flex items-center gap-2">
-              Tech Stack
-              <span className="text-xs text-muted-foreground font-normal">(optional)</span>
-            </Label>
-            <div className="relative">
-              <Input
-                value={techStack}
-                onChange={(e) => setTechStack(e.target.value)}
-                placeholder="e.g., React, Node.js, TypeScript"
-                className="h-11 text-sm bg-background/80 backdrop-blur-sm border-border/50 focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 placeholder:text-muted-foreground/50 shadow-sm hover:border-border rounded-xl px-4 group-hover/field:shadow-md"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2.5 group/field">
-            <Label className="text-sm font-semibold flex items-center gap-2">
-              Interest Groups
-              <span className="text-xs text-muted-foreground font-normal">(optional)</span>
-            </Label>
-            <div className="relative">
-              <Input
-                value={interests}
-                onChange={(e) => setInterests(e.target.value)}
-                placeholder="e.g., WebRTC, AI, Open Source"
-                className="h-11 text-sm bg-background/80 backdrop-blur-sm border-border/50 focus:bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 placeholder:text-muted-foreground/50 shadow-sm hover:border-border rounded-xl px-4 group-hover/field:shadow-md"
-              />
-            </div>
-          </div>
-        </form>
-
-        {identity === "anonymous" && (
-          <div className="rounded-lg bg-muted/60 p-3 text-xs ring-1 ring-border">
-            <div className="flex items-start gap-2.5">
-              <span className="text-base">🔒</span>
-              <div>
-                <div className="font-semibold text-foreground">Anonymous Mode</div>
-                <div className="text-muted-foreground text-xs mt-0.5">
-                  Your identity will remain hidden during this session
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div className="border-t border-border/50 p-5 space-y-3 flex-shrink-0 bg-background/95 backdrop-blur-sm">
-        <Button
-          type="button"
-          onClick={() => setJoined(true)}
-          className="h-11 w-full rounded-lg font-medium transition-all duration-200 bg-primary hover:bg-primary/90"
-        >
-          <span className="flex items-center justify-center gap-2">
-            Join Meeting
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </span>
-        </Button>
-        <p className="text-center text-xs text-muted-foreground">
-          By joining, you agree to our terms and privacy policy
-        </p>
-      </div>
-    </div>
-  );
-}
+import { useSession } from "next-auth/react";
+import PreferenceSelector from "./PreferenceSelector";
+import { UserCriteriaSchema } from "@/lib/schemas";
+import * as z from "zod";
 
 export default function DeviceCheck() {
   const {
@@ -162,6 +38,8 @@ export default function DeviceCheck() {
     setVideoOn,
     setAudioOn,
   } = useHelixque();
+
+  const [preferences, setPreferences] = useState<z.infer<typeof UserCriteriaSchema> | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const localAudioTrackRef = useRef<MediaStreamTrack | null>(null);
@@ -273,12 +151,35 @@ export default function DeviceCheck() {
     getCamRef.current = getCam;
   });
 
+  const { data: session } = useSession();
+
+  const handleJoin = async (data: z.infer<typeof UserCriteriaSchema>) => {
+      try {
+        const userId = (session?.user as any)?.id;
+        if (userId) {
+          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
+          await fetch(`${backendUrl}/users/${userId}/preferences`, {
+             method: "POST",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify(data)
+          });
+          toast.success("Preferences saved");
+        }
+      } catch (error) {
+        console.error("Failed to save preferences:", error);
+        toast.error("Failed to save preferences");
+      }
+      setPreferences(data);
+      setJoined(true);
+  }
+
   if (joined) {
     const handleOnLeave = () => {
       setJoined(false);
       releaseTracks();
       setLocalAudioTrack(null);
       setLocalVideoTrack(null);
+      setPreferences(null);
     };
 
     return (
@@ -289,6 +190,7 @@ export default function DeviceCheck() {
         audioOn={audioOn}
         videoOn={videoOn}
         onLeave={handleOnLeave}
+        lookingFor={preferences}
       />
     );
   }
@@ -415,8 +317,8 @@ export default function DeviceCheck() {
       </div>
 
       {/* Preferences Panel - Right Side */}
-      <div className="w-[360px] flex-shrink-0 relative z-10">
-        <PreferencesPanel />
+      <div className="w-[360px] flex-shrink-0 relative z-10 bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl shadow-2xl shadow-black/5 overflow-hidden">
+        <PreferenceSelector onJoin={handleJoin} />
       </div>
     </div>
   );

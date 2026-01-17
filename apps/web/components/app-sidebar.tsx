@@ -21,6 +21,11 @@ import {
   Zap,
   UserPen,
   Sparkles,
+  Briefcase,
+  Trophy,
+  Bell,
+  Bookmark,
+  TrendingUp,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -51,6 +56,12 @@ const data = {
   },
   connect: [
     {
+      title: "Opportunities",
+      url: "/dashboard/opportunities",
+      icon: Briefcase,
+      badge: "New",
+    },
+    {
       title: "Professional Connect",
       url: "/dashboard/professional",
       icon: Handshake,
@@ -75,6 +86,11 @@ const data = {
   ],
   community: [
     {
+      title: "Leaderboard",
+      url: "/dashboard/leaderboard",
+      icon: Trophy,
+    },
+    {
       title: "Events",
       url: "/dashboard/events",
       icon: Zap, // Using Zap for now, potentially generic
@@ -83,6 +99,12 @@ const data = {
       title: "Discussions",
       url: "/dashboard/community",
       icon: MessageCircle,
+    },
+     {
+      title: "Notifications",
+      url: "/dashboard/notifications",
+      icon: Bell,
+      badge: 4,
     },
   ],
   socials: [
@@ -100,6 +122,16 @@ const data = {
     },
   ],
   resources: [
+     {
+        title: "Saved Items",
+        url: "/dashboard/saved",
+        icon: Bookmark,
+     },
+     {
+        title: "Analytics",
+        url: "/dashboard/analytics",
+        icon: TrendingUp,
+     },
      {
         title: "Blogs",
         url: "/dashboard/blogs",
@@ -125,119 +157,84 @@ const data = {
   ],
 };
 
+import { useSession } from "next-auth/react";
+
+// ... existing imports ...
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session, status } = useSession();
+  
+  console.log("AppSidebar Session:", { status, user: session?.user });
+
+  const user = {
+    name: session?.user?.name || "User",
+    email: session?.user?.email || "user@example.com",
+    avatar: session?.user?.image || "https://github.com/shadcn.png",
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        {/* Single Profile Display - Future: Will replace with ProfileSwitcher for multiple profiles */}
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
-                <div className="bg-sidebar text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  {/* <GalleryVerticalEnd className="size-4" /> */}
-                  <Image
-                    src="https://www.helixque.com/logo.svg"
-                    alt="Helixque Logo"
-                    width={32}
-                    height={32}
-                  />
+                <div className="flex aspect-square size-8 items-center justify-center">
+                  <Image src="/logo.svg" alt="Helixque" width={24} height={24} className="size-8" />
                 </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">Helixque</span>
-                  <span className="text-xs">Company</span>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Helixque</span>
+                  <span className="truncate text-xs">Instant Connect</span>
                 </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-
-        {/* TODO: Implement ProfileSwitcher component for multiple profile/organization switching
-        <ProfileSwitcher profiles={data.profiles} currentProfile={data.currentProfile} />
-        */}
-
-        {/* Original TeamSwitcher implementation - Keep for reference
-        <TeamSwitcher teams={data.teams} />
-        */}
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-           <SidebarGroupLabel>Platform</SidebarGroupLabel>
-           <SidebarMenu>
-              {data.connect.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link href={item.url}>
-                      {item.icon && <item.icon />}
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-           </SidebarMenu>
-        </SidebarGroup>
-
+        <NavConnect items={data.connect} />
+        
         <SidebarGroup id="sidebar-community">
            <SidebarGroupLabel>Community</SidebarGroupLabel>
            <SidebarMenu>
               {data.community.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link href={item.url}>
-                      {item.icon && <item.icon />}
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-              {data.socials.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link href={item.url}>
-                      {item.icon && <item.icon />}
-                      <span>{item.title}</span>
-                       {item.badge && <span className="ml-auto text-xs">{item.badge}</span>}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                  <SidebarMenuItem key={item.title}>
+                     <SidebarMenuButton asChild tooltip={item.title}>
+                        <Link href={item.url}>
+                           <item.icon />
+                           <span>{item.title}</span>
+                           {/* Badge logic if needed, data.community has badge for Notifications */}
+                           {/* @ts-ignore - badge exists on some items */}
+                           {item.badge ? <span className="ml-auto flex size-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-medium text-primary shadow-xs">{item.badge}</span> : null}
+                        </Link>
+                     </SidebarMenuButton>
+                  </SidebarMenuItem>
+               ))}
            </SidebarMenu>
         </SidebarGroup>
+
+        <NavSocials items={data.socials} />
 
         <SidebarGroup id="sidebar-resources">
            <SidebarGroupLabel>Resources</SidebarGroupLabel>
            <SidebarMenu>
               {data.resources.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link href={item.url}>
-                      {item.icon && <item.icon />}
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                  <SidebarMenuItem key={item.title}>
+                     <SidebarMenuButton asChild tooltip={item.title}>
+                        <Link href={item.url}>
+                           <item.icon />
+                           <span>{item.title}</span>
+                        </Link>
+                     </SidebarMenuButton>
+                  </SidebarMenuItem>
+               ))}
            </SidebarMenu>
         </SidebarGroup>
 
         <NavProFeatures features={data.proFeatures} />
-        
-        <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Edit Profile">
-                <Link href="/dashboard/edit-profile">
-                  <UserPen />
-                  <span>Edit Profile</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter id="sidebar-user">
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

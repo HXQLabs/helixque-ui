@@ -18,7 +18,7 @@ export function NavSocials({
     title: string;
     url: string;
     icon: LucideIcon;
-    badge?: number;
+    badge?: number | string;
   }[];
 }) {
   return (

@@ -23,13 +23,22 @@ import {
 } from "@workspace/ui/components/sidebar";
 import * as Tour from "@workspace/ui/components/tour";
 import { useHelixque } from "@workspace/state";
+import { ThemeToggle } from "@/components/theme-toggle";
+
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
+import { useEffect } from "react";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { activeSection, activeSubSection } = useNavigation();
   const { tourOpen, setTourOpen } = useHelixque();
+  /* Removed duplicate line */
 
   return (
     <>
+      <React.Suspense fallback={null}>
+         <TourInitializer setTourOpen={setTourOpen} />
+      </React.Suspense>
       <Tour.Root open={tourOpen} onOpenChange={setTourOpen}>
         <Tour.Portal>
           <Tour.Spotlight />
@@ -174,14 +183,16 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="ml-auto mr-4"
-            onClick={() => setTourOpen(true)}
-          >
-            Start Tour
-          </Button>
+          <div className="ml-auto mr-4 flex items-center gap-2">
+            <ThemeToggle />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setTourOpen(true)}
+            >
+              Start Tour
+            </Button>
+          </div>
         </header>
         <div
           className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-hidden min-h-0"
@@ -192,6 +203,16 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
       </SidebarInset>
     </>
   );
+}
+
+function TourInitializer({ setTourOpen }: { setTourOpen: (open: boolean) => void }) {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("tour") === "true") {
+      setTourOpen(true);
+    }
+  }, [searchParams, setTourOpen]);
+  return null;
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {

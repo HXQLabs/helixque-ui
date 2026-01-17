@@ -3,6 +3,7 @@
 import { useNavigation } from "@/contexts/navigation-context";
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@workspace/ui/components/dialog";
 import {
   ChevronDownIcon,
@@ -26,120 +28,104 @@ import {
   CalendarIcon,
   ClockIcon,
   GlobeIcon,
+  Plus,
 } from "lucide-react";
 import { format } from "date-fns";
-
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { toast } from "sonner";
+import { Textarea } from "@workspace/ui/components/textarea";
 
 interface Meeting {
   id: string;
   title: string;
-  date: Date;
-  endDate: Date;
-  type: "anonymous" | "exposed" | "scheduled";
-  participants?: number;
-  status?: "upcoming" | "completed" | "cancelled";
-  timezone?: string;
-  location?: string;
+  description?: string;
+  startTime: string; // ISO string from API
+  endTime: string; // ISO string from API
+  type: string;
+  status: string;
+  participants: any[];
+}
+
+interface DashboardStats {
+  meetingsCount: number;
+  upcomingMeetingsCount: number;
+  connectionsCount: number;
+  profileViews: number;
 }
 
 export default function Page() {
-  const { /* activeSection, activeSubSection */ } = useNavigation();
+  const { setActiveSection, setActiveSubSection } = useNavigation();
   const router = useRouter();
+  const { data: session } = useSession();
+  const userId = (session?.user as any)?.id;
 
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
-    new Date()
-  );
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
   const [showMeetingDetails, setShowMeetingDetails] = React.useState(false);
+  const [showScheduleDialog, setShowScheduleDialog] = React.useState(false);
+  
+  const [stats, setStats] = React.useState<DashboardStats>({
+    meetingsCount: 0,
+    upcomingMeetingsCount: 0,
+    connectionsCount: 0,
+    profileViews: 0
+  });
+  const [meetings, setMeetings] = React.useState<Meeting[]>([]);
   const [selectedDateMeetings, setSelectedDateMeetings] = React.useState<Meeting[]>([]);
-  const [showProfileCompleteDialog, setShowProfileCompleteDialog] = React.useState(false);
 
-  // Mock profile check
+  // New Meeting Form State
+  const [newMeeting, setNewMeeting] = React.useState({
+    title: "",
+    description: "",
+    date: format(new Date(), "yyyy-MM-dd"),
+    startTime: "09:00",
+    endTime: "10:00",
+  });
+
+  // Initialize Breadcrumbs
   React.useEffect(() => {
-    // Check if profile is marked as completed in localStorage
-    // In a real app, this would check the user object from the backend/context
-    const isProfileCompleted = localStorage.getItem("helixque-profile-completed");
-    
-    if (!isProfileCompleted) {
-      // Delay slightly for better UX
-      const timer = setTimeout(() => {
-        setShowProfileCompleteDialog(true);
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, []);
+    setActiveSection("Dashboard");
+    setActiveSubSection("Overview");
+  }, [setActiveSection, setActiveSubSection]);
 
-  const handleCompleteProfile = () => {
-    setShowProfileCompleteDialog(false);
-    // Mark as completed for now so it doesn't show again immediately (optional logic)
-    // localStorage.setItem("helixque-profile-completed", "true");
-    router.push("/dashboard/edit-profile");
-  };
+  // Fetch Data
+  React.useEffect(() => {
+    if (!userId) return;
 
-  // User timezone
-  const userTimezone = "PST (UTC-8)";
+    const fetchData = async () => {
+      try {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
+        
+        // Fetch Stats
+        const statsRes = await fetch(`${backendUrl}/users/${userId}/stats`);
+        if (statsRes.ok) {
+          setStats(await statsRes.json());
+        }
 
-  // Mock data for upcoming meetings - extended with endDate and timezone
-  const upcomingMeetings: Meeting[] = [
-    {
-      id: "1",
-      title: "Team Sync",
-      date: new Date(2025, 11, 19, 10, 0),
-      endDate: new Date(2025, 11, 19, 11, 0),
-      type: "scheduled",
-      participants: 5,
-      status: "upcoming",
-      timezone: "PST (UTC-8)",
-      location: "Conference Room A",
-    },
-    {
-      id: "2",
-      title: "Quick Connect",
-      date: new Date(2025, 11, 19, 14, 30),
-      endDate: new Date(2025, 11, 19, 15, 0),
-      type: "anonymous",
-      participants: 2,
-      status: "upcoming",
-      timezone: "PST (UTC-8)",
-    },
-    {
-      id: "3",
-      title: "Client Review",
-      date: new Date(2025, 11, 20, 15, 0),
-      endDate: new Date(2025, 11, 20, 16, 30),
-      type: "exposed",
-      participants: 3,
-      status: "upcoming",
-      timezone: "EST (UTC-5)",
-      location: "Virtual - Zoom",
-    },
-    {
-      id: "4",
-      title: "Project Kickoff",
-      date: new Date(2025, 11, 21, 9, 0),
-      endDate: new Date(2025, 11, 21, 10, 0),
-      type: "scheduled",
-      participants: 8,
-      status: "upcoming",
-      timezone: "PST (UTC-8)",
-      location: "Main Office",
-    },
-    {
-      id: "5",
-      title: "1:1 Sync",
-      date: new Date(2025, 11, 22, 16, 0),
-      endDate: new Date(2025, 11, 22, 16, 30),
-      type: "scheduled",
-      participants: 2,
-      status: "upcoming",
-      timezone: "PST (UTC-8)",
-    },
-  ];
+        // Fetch Meetings
+        const meetingsRes = await fetch(`${backendUrl}/meetings/user/${userId}`);
+        if (meetingsRes.ok) {
+          const data = await meetingsRes.json();
+          setMeetings(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      }
+    };
+
+    fetchData();
+  }, [userId]);
+
+  const upcomingMeetings = React.useMemo(() => {
+    return meetings
+      .filter(m => new Date(m.startTime) > new Date())
+      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+  }, [meetings]);
 
   // Calculate meetings count by date for the calendar
   const getMeetingCountByDate = (date: Date): number => {
-    return upcomingMeetings.filter(
-      (m) =>
-        m.date.toDateString() === date.toDateString()
+    return meetings.filter(
+      (m) => new Date(m.startTime).toDateString() === date.toDateString()
     ).length;
   };
 
@@ -147,8 +133,8 @@ export default function Page() {
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (date) {
-      const meetingsForDate = upcomingMeetings.filter(
-        (m) => m.date.toDateString() === date.toDateString()
+      const meetingsForDate = meetings.filter(
+        (m) => new Date(m.startTime).toDateString() === date.toDateString()
       );
       setSelectedDateMeetings(meetingsForDate);
       if (meetingsForDate.length > 0) {
@@ -157,9 +143,64 @@ export default function Page() {
     }
   };
 
+  const handleCreateMeeting = async () => {
+    if (!userId) return;
+
+    try {
+      const startDateTime = new Date(`${newMeeting.date}T${newMeeting.startTime}:00`);
+      const endDateTime = new Date(`${newMeeting.date}T${newMeeting.endTime}:00`);
+
+      if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
+        toast.error("Invalid date or time selected");
+        return;
+      }
+
+      if (endDateTime <= startDateTime) {
+        toast.error("End time must be after start time");
+        return;
+      }
+
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
+      const res = await fetch(`${backendUrl}/meetings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newMeeting.title,
+          description: newMeeting.description,
+          startTime: startDateTime.toISOString(),
+          endTime: endDateTime.toISOString(),
+          hostId: userId,
+          type: "scheduled"
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to create meeting");
+
+      const createdMeeting = await res.json();
+      setMeetings([...meetings, createdMeeting]);
+      setShowScheduleDialog(false);
+      toast.success("Meeting scheduled successfully!");
+      
+      // Reset form
+      setNewMeeting({
+        title: "",
+        description: "",
+        date: format(new Date(), "yyyy-MM-dd"),
+        startTime: "09:00",
+        endTime: "10:00",
+      });
+
+    } catch (error) {
+      toast.error("Failed to schedule meeting");
+      console.error(error);
+    }
+  };
+
   const goToMeet = (identity: "anonymous" | "exposed") => {
     router.push(`/meet?identity=${identity}`);
   };
+
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   return (
     <div className="flex flex-col h-full w-full overflow-hidden bg-background">
@@ -180,6 +221,15 @@ export default function Page() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem onClick={() => setShowScheduleDialog(true)} className="gap-3 py-2.5">
+              <Plus className="size-4 text-muted-foreground" />
+              <div className="flex-1">
+                <div className="font-medium text-sm">Schedule Meeting</div>
+                <div className="text-xs text-muted-foreground">
+                  Plan a future connection
+                </div>
+              </div>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => goToMeet("anonymous")} className="gap-3 py-2.5">
               <UsersIcon className="size-4 text-muted-foreground" />
               <div className="flex-1">
@@ -214,26 +264,20 @@ export default function Page() {
                 <VideoIcon className="size-4 text-primary" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{upcomingMeetings.length}</p>
-            <p className="text-xs text-muted-foreground">Scheduled this month</p>
+            <p className="text-2xl font-bold">{stats.meetingsCount}</p>
+            <p className="text-xs text-muted-foreground">All time</p>
           </div>
 
-          {/* This Week Card */}
+          {/* This Week Card (Upcoming) */}
           <div className="bg-card border border-border/50 rounded-xl p-4 space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">This Week</span>
+              <span className="text-sm text-muted-foreground">Upcoming</span>
               <div className="p-2 bg-blue-500/10 rounded-lg">
                 <CalendarIcon className="size-4 text-blue-500" />
               </div>
             </div>
-            <p className="text-2xl font-bold">
-              {upcomingMeetings.filter((m) => {
-                const now = new Date();
-                const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-                return m.date >= now && m.date <= weekFromNow;
-              }).length}
-            </p>
-            <p className="text-xs text-muted-foreground">Upcoming meetings</p>
+            <p className="text-2xl font-bold">{stats.upcomingMeetingsCount}</p>
+            <p className="text-xs text-muted-foreground">Scheduled meetings</p>
           </div>
 
           {/* Timezone Card */}
@@ -244,8 +288,8 @@ export default function Page() {
                 <GlobeIcon className="size-4 text-green-500" />
               </div>
             </div>
-            <p className="text-lg font-semibold">{userTimezone}</p>
-            <p className="text-xs text-muted-foreground">All times in local timezone</p>
+            <p className="text-lg font-semibold truncate" title={userTimezone}>{userTimezone}</p>
+            <p className="text-xs text-muted-foreground">Local timezone</p>
           </div>
 
           {/* Next Meeting Card */}
@@ -260,7 +304,7 @@ export default function Page() {
               <>
                 <p className="text-lg font-semibold truncate">{upcomingMeetings[0].title}</p>
                 <p className="text-xs text-muted-foreground">
-                  {format(upcomingMeetings[0].date, "MMM d, HH:mm")}
+                  {format(new Date(upcomingMeetings[0].startTime), "MMM d, HH:mm")}
                 </p>
               </>
             ) : (
@@ -327,12 +371,12 @@ export default function Page() {
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <CalendarIcon className="size-3" />
-                      <span>{format(meeting.date, "MMM d, HH:mm")}</span>
-                      {meeting.participants && (
+                      <span>{format(new Date(meeting.startTime), "MMM d, HH:mm")}</span>
+                      {meeting.participants?.length > 0 && (
                         <>
                           <span className="text-border">•</span>
                           <UsersIcon className="size-3" />
-                          <span>{meeting.participants}</span>
+                          <span>{meeting.participants.length}</span>
                         </>
                       )}
                     </div>
@@ -347,11 +391,6 @@ export default function Page() {
             </div>
           </div>
         </div>
-
-        {/* Bottom Row: Gantt Chart */}
-
-
-
 
         {/* Selected Date Meetings Details */}
         {selectedDate && selectedDateMeetings.length > 0 && (
@@ -378,7 +417,7 @@ export default function Page() {
                   >
                     <p className="font-medium text-sm text-foreground truncate mb-1">{meeting.title}</p>
                     <p className="text-muted-foreground text-xs mb-2">
-                      {format(meeting.date, "HH:mm")} - {format(meeting.endDate, "HH:mm")}
+                      {format(new Date(meeting.startTime), "HH:mm")} - {format(new Date(meeting.endTime), "HH:mm")}
                     </p>
                     <Badge variant="outline" className="capitalize text-xs">
                       {meeting.type}
@@ -390,13 +429,14 @@ export default function Page() {
           </div>
         )}
       </div>
+
       {/* Meeting Details Dialog */}
       <Dialog open={showMeetingDetails} onOpenChange={setShowMeetingDetails}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Meetings on {selectedDate?.toLocaleDateString()}</DialogTitle>
             <DialogDescription>
-              Click a meeting to view details
+              Details for selected date
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
@@ -413,13 +453,9 @@ export default function Page() {
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {format(meeting.date, "HH:mm")} - {format(meeting.endDate, "HH:mm")}
+                    {format(new Date(meeting.startTime), "HH:mm")} - {format(new Date(meeting.endTime), "HH:mm")}
                   </p>
-                  {meeting.participants && (
-                    <p className="text-xs text-muted-foreground">
-                      {meeting.participants} participants
-                    </p>
-                  )}
+                  {meeting.description && <p className="text-xs text-muted-foreground">{meeting.description}</p>}
                 </div>
               ))
             ) : (
@@ -428,35 +464,71 @@ export default function Page() {
           </div>
         </DialogContent>
       </Dialog>
-      <Dialog open={showProfileCompleteDialog} onOpenChange={setShowProfileCompleteDialog}>
+
+      {/* Schedule Meeting Dialog */}
+      <Dialog open={showScheduleDialog} onOpenChange={setShowScheduleDialog}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Complete Your Profile</DialogTitle>
+            <DialogTitle>Schedule Meeting</DialogTitle>
             <DialogDescription>
-              To help us find the best matches for you, please complete your profile with your skills and preferences.
+              Create a new scheduled meeting.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="flex items-center gap-4">
-              <div className="bg-primary/10 p-3 rounded-full">
-                <UsersIcon className="h-6 w-6 text-primary" />
+            <div className="grid gap-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={newMeeting.title}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewMeeting({ ...newMeeting, title: e.target.value })}
+                placeholder="Team Sync"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={newMeeting.description}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewMeeting({ ...newMeeting, description: e.target.value })}
+                placeholder="Meeting agenda..."
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="date">Date</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={newMeeting.date}
+                  onChange={(e) => setNewMeeting({ ...newMeeting, date: e.target.value })}
+                />
               </div>
-              <div className="space-y-1">
-                <p className="text-sm font-medium leading-none">Better Matches</p>
-                <p className="text-sm text-muted-foreground">
-                  Get matched with developers who share your interests.
-                </p>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+               <div className="grid gap-2">
+                <Label htmlFor="startTime">Start Time</Label>
+                <Input
+                  id="startTime"
+                  type="time"
+                  value={newMeeting.startTime}
+                  onChange={(e) => setNewMeeting({ ...newMeeting, startTime: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="endTime">End Time</Label>
+                <Input
+                  id="endTime"
+                  type="time"
+                  value={newMeeting.endTime}
+                  onChange={(e) => setNewMeeting({ ...newMeeting, endTime: e.target.value })}
+                />
               </div>
             </div>
           </div>
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setShowProfileCompleteDialog(false)}>
-              Remind me later
-            </Button>
-            <Button onClick={handleCompleteProfile}>
-              Complete Profile
-            </Button>
-          </div>
+          <DialogFooter>
+             <Button variant="outline" onClick={() => setShowScheduleDialog(false)}>Cancel</Button>
+             <Button onClick={handleCreateMeeting}>Schedule</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

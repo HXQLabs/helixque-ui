@@ -1,4 +1,11 @@
 import { z } from "zod";
+import {
+  ROLES,
+  DOMAINS,
+  TECH_STACK,
+  EXPERIENCE_LEVELS,
+  SPOKEN_LANGUAGES,
+} from "./constants";
 
 // Enums
 export const UserStatus = z.enum([
@@ -12,20 +19,26 @@ export const UserStatus = z.enum([
 export const MatchMode = z.enum(["STRICT", "LOOSE"]);
 
 // User Preferences Schema
+// User Preferences Schema
 export const UserProfileSchema = z.object({
-  language: z.string().describe("Primary programming language"),
-  role: z.string().describe("Current role (e.g., Junior, Senior, Mentor)"),
-  domain: z.string().describe("Industry domain (e.g., Fintech, Edtech)"),
-  techStack: z.array(z.string()).describe("List of known technologies"),
-  experience: z.enum(["0-1", "1-3", "3-5", "5-8", "8+"]).describe("Experience Range (Years)"),
+  languages: z.array(z.union([z.enum(SPOKEN_LANGUAGES), z.string()])).describe("Spoken languages"),
+  role: z.union([z.enum(ROLES), z.string()]).describe("Current role"),
+  domain: z.union([z.enum(DOMAINS), z.string()]).describe("Industry domain"),
+  techStack: z.array(z.union([z.enum(TECH_STACK), z.string()])).describe("List of known technologies"),
+  experience: z.enum(EXPERIENCE_LEVELS).describe("Experience Range (Years)"),
 });
 
 export const UserCriteriaSchema = z.object({
-  language: z.union([z.string(), z.array(z.string())]).describe("Target language (or list of languages)"),
-  role: z.array(z.string()).describe("List of acceptable roles"),
-  domain: z.array(z.string()).describe("List of acceptable domains"),
-  techStack: z.array(z.string()).describe("List of desired technologies"),
-  minExperience: z.enum(["0-1", "1-3", "3-5", "5-8", "8+"]).optional().describe("Minimum experience range"),
+  languages: z.array(z.union([z.enum(SPOKEN_LANGUAGES), z.string()])).describe("Target spoken languages"),
+  role: z.union([z.enum(ROLES), z.string()]).describe("Target role"),
+  domain: z.union([z.enum(DOMAINS), z.string()]).describe("Target domain"),
+  techStack: z.array(z.union([z.enum(TECH_STACK), z.string()])).describe("List of desired technologies"),
+  minExperience: z.enum(EXPERIENCE_LEVELS).describe("Minimum experience range"),
+});
+
+export const MatchRequestSchema = z.object({
+  lookingFor: UserCriteriaSchema,
+  requestId: z.string(),
 });
 
 export const UserAvailabilitySchema = z.object({

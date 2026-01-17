@@ -52,6 +52,7 @@ interface RoomProps {
   audioOn?: boolean;
   videoOn?: boolean;
   onLeave?: () => void;
+  lookingFor?: any; // Using any or specific type if imported
 }
 
 export default function Room({
@@ -61,6 +62,7 @@ export default function Room({
   audioOn,
   videoOn,
   onLeave,
+  lookingFor,
 }: RoomProps) {
   const router = useRouter();
 
@@ -627,7 +629,7 @@ export default function Room({
       autoConnect: false,
       reconnection: true,
       reconnectionAttempts: 5,
-      auth: { name },
+      auth: { name, lookingFor, requestId: crypto.randomUUID() },
     });
 
     socketRef.current = s;

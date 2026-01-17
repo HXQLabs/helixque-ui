@@ -35,7 +35,7 @@ interface Message {
 
 import { useNavigation } from "@/contexts/navigation-context";
 
-export default function AiAssistantPage() {
+function AiAssistantContent() {
   const { setActiveSection, setActiveSubSection } = useNavigation();
 
   useEffect(() => {
@@ -285,6 +285,14 @@ export default function AiAssistantPage() {
          </div>
       </div>
     </div>
+  );
+}
+
+export default function AiAssistantPage() {
+  return (
+    <React.Suspense fallback={<div>Loading AI Assistant...</div>}>
+      <AiAssistantContent />
+    </React.Suspense>
   );
 }
 
