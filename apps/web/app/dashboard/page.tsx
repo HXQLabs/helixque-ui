@@ -28,7 +28,7 @@ import {
   GlobeIcon,
 } from "lucide-react";
 import { format } from "date-fns";
-import { GanttExample } from "@/components/dashboard/gantt-example";
+
 
 interface Meeting {
   id: string;
@@ -51,6 +51,29 @@ export default function Page() {
   );
   const [showMeetingDetails, setShowMeetingDetails] = React.useState(false);
   const [selectedDateMeetings, setSelectedDateMeetings] = React.useState<Meeting[]>([]);
+  const [showProfileCompleteDialog, setShowProfileCompleteDialog] = React.useState(false);
+
+  // Mock profile check
+  React.useEffect(() => {
+    // Check if profile is marked as completed in localStorage
+    // In a real app, this would check the user object from the backend/context
+    const isProfileCompleted = localStorage.getItem("helixque-profile-completed");
+    
+    if (!isProfileCompleted) {
+      // Delay slightly for better UX
+      const timer = setTimeout(() => {
+        setShowProfileCompleteDialog(true);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleCompleteProfile = () => {
+    setShowProfileCompleteDialog(false);
+    // Mark as completed for now so it doesn't show again immediately (optional logic)
+    // localStorage.setItem("helixque-profile-completed", "true");
+    router.push("/dashboard/edit-profile");
+  };
 
   // User timezone
   const userTimezone = "PST (UTC-8)";
@@ -326,38 +349,9 @@ export default function Page() {
         </div>
 
         {/* Bottom Row: Gantt Chart */}
-        <div className="h-[220px] shrink-0 bg-card border border-border/50 rounded-xl overflow-hidden flex flex-col">
-          <div className="px-4 py-3 border-b border-border/50 flex items-center justify-between shrink-0">
-            <h3 className="text-sm font-semibold flex items-center gap-2">
-              <CalendarIcon className="size-4 text-primary" />
-              Schedule Timeline
-            </h3>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                <span className="text-xs text-muted-foreground">Scheduled</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                <span className="text-xs text-muted-foreground">Anonymous</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                <span className="text-xs text-muted-foreground">Exposed</span>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        {/* <GanttExample
-              meetings={upcomingMeetings}
-              onSelectMeeting={(id) => console.log("Selected meeting:", id)}
-              onRemoveMeeting={(id) => console.log("Removed meeting:", id)}
-              onMoveMeeting={(id, startAt, endAt) =>
-                console.log("Moved meeting:", id, startAt, endAt)
-              }
-              onCreateMarker={(date) => console.log("Create marker:", date)}
-            /> */}
+
+
 
         {/* Selected Date Meetings Details */}
         {selectedDate && selectedDateMeetings.length > 0 && (
@@ -431,6 +425,37 @@ export default function Page() {
             ) : (
               <p className="text-sm text-muted-foreground">No meetings scheduled</p>
             )}
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={showProfileCompleteDialog} onOpenChange={setShowProfileCompleteDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Complete Your Profile</DialogTitle>
+            <DialogDescription>
+              To help us find the best matches for you, please complete your profile with your skills and preferences.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="flex items-center gap-4">
+              <div className="bg-primary/10 p-3 rounded-full">
+                <UsersIcon className="h-6 w-6 text-primary" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-medium leading-none">Better Matches</p>
+                <p className="text-sm text-muted-foreground">
+                  Get matched with developers who share your interests.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setShowProfileCompleteDialog(false)}>
+              Remind me later
+            </Button>
+            <Button onClick={handleCompleteProfile}>
+              Complete Profile
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

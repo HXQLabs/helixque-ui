@@ -78,6 +78,72 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
               </div>
             </Tour.Footer>
           </Tour.Step>
+
+          <Tour.Step
+            target="#sidebar-community"
+            side="right"
+            sideOffset={8}
+            alignOffset={0}
+          >
+            <Tour.Arrow />
+            <Tour.Header>
+              <Tour.Title>Community Hub</Tour.Title>
+              <Tour.Description>
+                Join upcoming events, participate in discussions, and connect with peers.
+              </Tour.Description>
+            </Tour.Header>
+            <Tour.Footer>
+              <Tour.StepCounter />
+              <div className="ml-auto flex gap-2">
+                <Tour.Prev />
+                <Tour.Next />
+              </div>
+            </Tour.Footer>
+          </Tour.Step>
+
+          <Tour.Step
+            target="#sidebar-resources"
+            side="right"
+            sideOffset={8}
+            alignOffset={0}
+          >
+            <Tour.Arrow />
+            <Tour.Header>
+              <Tour.Title>Resources & Learning</Tour.Title>
+              <Tour.Description>
+                Access curated blogs, changelogs, and our help center.
+              </Tour.Description>
+            </Tour.Header>
+            <Tour.Footer>
+              <Tour.StepCounter />
+              <div className="ml-auto flex gap-2">
+                <Tour.Prev />
+                <Tour.Next />
+              </div>
+            </Tour.Footer>
+          </Tour.Step>
+
+          <Tour.Step
+            target="#sidebar-user"
+            side="right"
+            sideOffset={8}
+            alignOffset={0}
+          >
+            <Tour.Arrow />
+            <Tour.Header>
+              <Tour.Title>Your Profile</Tour.Title>
+              <Tour.Description>
+                Manage your account settings, billing, and subscription here.
+              </Tour.Description>
+            </Tour.Header>
+            <Tour.Footer>
+              <Tour.StepCounter />
+              <div className="ml-auto flex gap-2">
+                <Tour.Prev />
+                <Tour.Next />
+              </div>
+            </Tour.Footer>
+          </Tour.Step>
         </Tour.Portal>
       </Tour.Root>
 

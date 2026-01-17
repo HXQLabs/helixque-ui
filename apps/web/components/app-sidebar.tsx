@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   AudioWaveform,
   BookOpen,
@@ -18,6 +19,8 @@ import {
   Settings2,
   SquareTerminal,
   Zap,
+  UserPen,
+  Sparkles,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -35,6 +38,8 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarGroup,
+  SidebarGroupLabel,
 } from "@workspace/ui/components/sidebar";
 
 // This is sample data.
@@ -44,142 +49,40 @@ const data = {
     email: "m@example.com",
     avatar: "https://github.com/evilrabbit.png",
   },
-  teams: [
+  connect: [
     {
-      name: "Acme Inc",
-      logo: "https://www.helixque.com/logo.svg",
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-  proFeatures: [
-    {
-      title: "Upgrade Plan",
-      url: "#",
-      icon: Zap,
-    },
-    {
-      title: "Advanced Settings",
-      url: "#",
-      icon: Settings2,
+      title: "Professional Connect",
+      url: "/dashboard/professional",
+      icon: Handshake,
+      badge: 0,
     },
     {
       title: "AI Assistant",
-      url: "#",
-      icon: Zap,
+      url: "/dashboard/ai-assistant",
+      icon: Bot, 
+    },
+    {
+      title: "Join as a Mentor",
+      url: "/dashboard/join-mentor",
+      icon: Award,
+      badge: 0,
+    },
+    {
+      title: "Random Connect",
+      url: "/meet",
+      icon: Sparkles,
+    },
+  ],
+  community: [
+    {
+      title: "Events",
+      url: "/dashboard/events",
+      icon: Zap, // Using Zap for now, potentially generic
+    },
+    {
+      title: "Discussions",
+      url: "/dashboard/community",
+      icon: MessageCircle,
     },
   ],
   socials: [
@@ -196,24 +99,28 @@ const data = {
       badge: 3,
     },
   ],
-  connect: [
+  resources: [
+     {
+        title: "Blogs",
+        url: "/dashboard/blogs",
+        icon: BookOpen,
+     },
+     {
+        title: "Changelog",
+        url: "/dashboard/changelog",
+        icon: Settings2, // Generic icon
+     },
+     {
+        title: "Help Center",
+        url: "/dashboard/help",
+        icon: Heart,
+     },
+  ],
+  proFeatures: [
     {
-      title: "Anonymous Connect",
-      url: "#",
-      icon: Heart,
-      badge: 0,
-    },
-    {
-      title: "Professional Connect",
-      url: "#",
-      icon: Handshake,
-      badge: 0,
-    },
-    {
-      title: "Join as a Mentor",
-      url: "#",
-      icon: Award,
-      badge: 0,
+      title: "Upgrade Plan",
+      url: "/dashboard/upgrade",
+      icon: Zap,
     },
   ],
 };
@@ -226,7 +133,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href="/dashboard">
                 <div className="bg-sidebar text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   {/* <GalleryVerticalEnd className="size-4" /> */}
                   <Image
@@ -240,7 +147,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="font-semibold">Helixque</span>
                   <span className="text-xs">Company</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -254,13 +161,82 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         */}
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        {/* <NavProjects projects={data.projects} /> */}
+        <SidebarGroup>
+           <SidebarGroupLabel>Platform</SidebarGroupLabel>
+           <SidebarMenu>
+              {data.connect.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link href={item.url}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+           </SidebarMenu>
+        </SidebarGroup>
+
+        <SidebarGroup id="sidebar-community">
+           <SidebarGroupLabel>Community</SidebarGroupLabel>
+           <SidebarMenu>
+              {data.community.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link href={item.url}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+              {data.socials.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link href={item.url}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                       {item.badge && <span className="ml-auto text-xs">{item.badge}</span>}
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+           </SidebarMenu>
+        </SidebarGroup>
+
+        <SidebarGroup id="sidebar-resources">
+           <SidebarGroupLabel>Resources</SidebarGroupLabel>
+           <SidebarMenu>
+              {data.resources.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild tooltip={item.title}>
+                    <Link href={item.url}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+           </SidebarMenu>
+        </SidebarGroup>
+
         <NavProFeatures features={data.proFeatures} />
-        <NavSocials items={data.socials} />
-        <NavConnect items={data.connect} />
+        
+        <SidebarGroup>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Edit Profile">
+                <Link href="/dashboard/edit-profile">
+                  <UserPen />
+                  <span>Edit Profile</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter id="sidebar-user">
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
