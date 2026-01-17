@@ -100,6 +100,8 @@ export default function Page() {
         const statsRes = await fetch(`${backendUrl}/users/${userId}/stats`);
         if (statsRes.ok) {
           setStats(await statsRes.json());
+        } else {
+           throw new Error("Stats fetch failed");
         }
 
         // Fetch Meetings
@@ -107,9 +109,42 @@ export default function Page() {
         if (meetingsRes.ok) {
           const data = await meetingsRes.json();
           setMeetings(data);
+        } else {
+           throw new Error("Meetings fetch failed");
         }
       } catch (error) {
-        console.error("Failed to fetch dashboard data:", error);
+        console.warn("Backend unreachable, using mock data:", error);
+        toast.error("Backend unavailable. Loading demo data.");
+        
+        // Mock Stats
+        setStats({
+          meetingsCount: 12,
+          upcomingMeetingsCount: 3,
+          connectionsCount: 45,
+          profileViews: 128
+        });
+
+        // Mock Upcoming Meetings
+        setMeetings([
+            {
+                id: "1",
+                title: "Team Sync",
+                startTime: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(), // Tomorrow
+                endTime: new Date(Date.now() + 1000 * 60 * 60 * 25).toISOString(),
+                type: "scheduled",
+                status: "confirmed",
+                participants: []
+            },
+             {
+                id: "2",
+                title: "Project Review",
+                startTime: new Date(Date.now() + 1000 * 60 * 60 * 48).toISOString(), // Day after tomorrow
+                endTime: new Date(Date.now() + 1000 * 60 * 60 * 49).toISOString(),
+                type: "scheduled",
+                status: "confirmed",
+                participants: []
+            }
+        ]);
       }
     };
 
