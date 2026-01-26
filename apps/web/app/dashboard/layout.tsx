@@ -1,9 +1,12 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { AppSidebar } from "@/components/app-sidebar"
-import { CommandMenu } from "@/components/command-menu"
-import { NavigationProvider, useNavigation } from "@/contexts/navigation-context"
+import { useState } from "react";
+import { AppSidebar } from "@/components/app-sidebar";
+import { CommandMenu } from "@/components/command-menu";
+import {
+  NavigationProvider,
+  useNavigation,
+} from "@/contexts/navigation-context";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,19 +14,19 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@workspace/ui/components/breadcrumb"
-import { Button } from "@workspace/ui/components/button"
-import { Separator } from "@workspace/ui/components/separator"
+} from "@workspace/ui/components/breadcrumb";
+import { Button } from "@workspace/ui/components/button";
+import { Separator } from "@workspace/ui/components/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@workspace/ui/components/sidebar"
-import * as Tour from "@workspace/ui/components/tour"
+} from "@workspace/ui/components/sidebar";
+import * as Tour from "@workspace/ui/components/tour";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { activeSection, activeSubSection } = useNavigation()
-  const [tourOpen, setTourOpen] = useState(false)
+  const { activeSection, activeSubSection } = useNavigation();
+  const [tourOpen, setTourOpen] = useState(false);
 
   return (
     <>
@@ -31,8 +34,13 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
         <Tour.Portal>
           <Tour.Spotlight />
           <Tour.SpotlightRing className="rounded-lg border-2 border-primary" />
-          
-          <Tour.Step target="#sidebar-trigger" side="bottom" sideOffset={8} alignOffset={0}>
+
+          <Tour.Step
+            target="#sidebar-trigger"
+            side="bottom"
+            sideOffset={8}
+            alignOffset={0}
+          >
             <Tour.Arrow />
             <Tour.Header>
               <Tour.Title>Navigation Toggle</Tour.Title>
@@ -49,7 +57,12 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             </Tour.Footer>
           </Tour.Step>
 
-          <Tour.Step target="#breadcrumb" side="bottom" sideOffset={8} alignOffset={0}>
+          <Tour.Step
+            target="#breadcrumb"
+            side="bottom"
+            sideOffset={8}
+            alignOffset={0}
+          >
             <Tour.Arrow />
             <Tour.Header>
               <Tour.Title>Breadcrumb Navigation</Tour.Title>
@@ -69,7 +82,10 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
       </Tour.Root>
 
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12" id="dashboard-header">
+        <header
+          className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12"
+          id="dashboard-header"
+        >
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" id="sidebar-trigger" />
             <Separator
@@ -79,9 +95,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             <Breadcrumb id="breadcrumb">
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    {activeSection}
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">{activeSection}</BreadcrumbLink>
                 </BreadcrumbItem>
                 {activeSubSection && (
                   <>
@@ -103,12 +117,15 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             Start Tour
           </Button>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-auto" id="dashboard-content">
+        <div
+          className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-auto"
+          id="dashboard-content"
+        >
           {children}
         </div>
       </SidebarInset>
     </>
-  )
+  );
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -120,5 +137,5 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <CommandMenu />
       </SidebarProvider>
     </NavigationProvider>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Folder,
@@ -6,8 +6,8 @@ import {
   MoreHorizontal,
   Trash2,
   type LucideIcon,
-} from "lucide-react"
-import { useNavigation } from "@/contexts/navigation-context"
+} from "lucide-react";
+import { useNavigation } from "@/contexts/navigation-context";
 
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
+} from "@workspace/ui/components/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -24,19 +24,19 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@workspace/ui/components/sidebar"
+} from "@workspace/ui/components/sidebar";
 
 export function NavProjects({
   projects,
 }: {
   projects: {
-    name: string
-    url: string
-    icon: LucideIcon
-  }[]
+    name: string;
+    url: string;
+    icon: LucideIcon;
+  }[];
 }) {
-  const { isMobile } = useSidebar()
-  const { activeSection, setActiveSection } = useNavigation()
+  const { isMobile } = useSidebar();
+  const { activeSection, setActiveSection } = useNavigation();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -89,5 +89,5 @@ export function NavProjects({
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

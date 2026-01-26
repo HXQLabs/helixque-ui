@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   Bell,
   Check,
@@ -14,7 +14,7 @@ import {
   Paintbrush,
   Settings,
   Video,
-} from "lucide-react"
+} from "lucide-react";
 
 import {
   Breadcrumb,
@@ -23,13 +23,13 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@workspace/ui/components/breadcrumb"
+} from "@workspace/ui/components/breadcrumb";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle
-} from "@workspace/ui/components/dialog"
+  DialogTitle,
+} from "@workspace/ui/components/dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -39,10 +39,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-} from "@workspace/ui/components/sidebar"
-import { Button } from "@workspace/ui/components/button"
-import { Label } from "@workspace/ui/components/label"
-import { Input } from "@workspace/ui/components/input"
+} from "@workspace/ui/components/sidebar";
+import { Button } from "@workspace/ui/components/button";
+import { Label } from "@workspace/ui/components/label";
+import { Input } from "@workspace/ui/components/input";
 
 const data = {
   nav: [
@@ -59,7 +59,7 @@ const data = {
     { name: "Privacy & visibility", icon: Lock },
     { name: "Advanced", icon: Settings },
   ],
-}
+};
 
 // Initial states for each setting
 export type NotificationsState = {
@@ -116,21 +116,21 @@ export type AdvancedState = {
   logLevel: string;
 };
 const initialStates = {
-  "Notifications": {
+  Notifications: {
     emailNotif: true,
     pushNotif: true,
     smsNotif: false,
   },
-  "Navigation": {
+  Navigation: {
     navStyle: "compact",
     showIcons: true,
   },
-  "Home": {
+  Home: {
     homepage: "Dashboard",
     showGreeting: true,
     itemsPerPage: "10",
   },
-  "Appearance": {
+  Appearance: {
     theme: "dark",
     compactMode: false,
   },
@@ -144,7 +144,7 @@ const initialStates = {
     region: "United States",
     timezone: "UTC-8 (PST)",
   },
-  "Accessibility": {
+  Accessibility: {
     reduceMotion: false,
     highContrast: false,
     fontSize: "Medium",
@@ -166,18 +166,26 @@ const initialStates = {
     showActivity: true,
     allowMessages: true,
   },
-  "Advanced": {
+  Advanced: {
     betaFeatures: false,
     logLevel: "Warning",
   },
-}
+};
 
 // Settings Content Components
-function NotificationsSettings({ state, setState }: { state: NotificationsState; setState: (s: NotificationsState) => void }) {
+function NotificationsSettings({
+  state,
+  setState,
+}: {
+  state: NotificationsState;
+  setState: (s: NotificationsState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="email-notif" className="font-medium cursor-pointer">Email Notifications</Label>
+        <Label htmlFor="email-notif" className="font-medium cursor-pointer">
+          Email Notifications
+        </Label>
         <input
           type="checkbox"
           id="email-notif"
@@ -187,7 +195,9 @@ function NotificationsSettings({ state, setState }: { state: NotificationsState;
         />
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="push-notif" className="font-medium cursor-pointer">Push Notifications</Label>
+        <Label htmlFor="push-notif" className="font-medium cursor-pointer">
+          Push Notifications
+        </Label>
         <input
           type="checkbox"
           id="push-notif"
@@ -197,7 +207,9 @@ function NotificationsSettings({ state, setState }: { state: NotificationsState;
         />
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="sms-notif" className="font-medium cursor-pointer">SMS Notifications</Label>
+        <Label htmlFor="sms-notif" className="font-medium cursor-pointer">
+          SMS Notifications
+        </Label>
         <input
           type="checkbox"
           id="sms-notif"
@@ -207,10 +219,16 @@ function NotificationsSettings({ state, setState }: { state: NotificationsState;
         />
       </div>
     </div>
-  )
+  );
 }
 
-function NavigationSettings({ state, setState }: { state: NavigationState; setState: (s: NavigationState) => void }) {
+function NavigationSettings({
+  state,
+  setState,
+}: {
+  state: NavigationState;
+  setState: (s: NavigationState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div>
@@ -239,7 +257,9 @@ function NavigationSettings({ state, setState }: { state: NavigationState; setSt
         </div>
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="show-icons" className="font-medium cursor-pointer">Show Icons</Label>
+        <Label htmlFor="show-icons" className="font-medium cursor-pointer">
+          Show Icons
+        </Label>
         <input
           type="checkbox"
           id="show-icons"
@@ -249,14 +269,22 @@ function NavigationSettings({ state, setState }: { state: NavigationState; setSt
         />
       </div>
     </div>
-  )
+  );
 }
 
-function HomeSettings({ state, setState }: { state: HomeState; setState: (s: HomeState) => void }) {
+function HomeSettings({
+  state,
+  setState,
+}: {
+  state: HomeState;
+  setState: (s: HomeState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div>
-        <Label htmlFor="homepage" className="mb-2.5 block font-medium">Homepage</Label>
+        <Label htmlFor="homepage" className="mb-2.5 block font-medium">
+          Homepage
+        </Label>
         <select
           id="homepage"
           value={state.homepage}
@@ -269,17 +297,23 @@ function HomeSettings({ state, setState }: { state: HomeState; setState: (s: Hom
         </select>
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="show-greeting" className="font-medium cursor-pointer">Show Greeting</Label>
+        <Label htmlFor="show-greeting" className="font-medium cursor-pointer">
+          Show Greeting
+        </Label>
         <input
           type="checkbox"
           id="show-greeting"
           checked={state.showGreeting}
-          onChange={(e) => setState({ ...state, showGreeting: e.target.checked })}
+          onChange={(e) =>
+            setState({ ...state, showGreeting: e.target.checked })
+          }
           className="w-4 h-4 accent-primary"
         />
       </div>
       <div>
-        <Label htmlFor="items-per-page" className="mb-2.5 block font-medium">Items Per Page</Label>
+        <Label htmlFor="items-per-page" className="mb-2.5 block font-medium">
+          Items Per Page
+        </Label>
         <Input
           id="items-per-page"
           type="number"
@@ -291,10 +325,16 @@ function HomeSettings({ state, setState }: { state: HomeState; setState: (s: Hom
         />
       </div>
     </div>
-  )
+  );
 }
 
-function AppearanceSettings({ state, setState }: { state: AppearanceState; setState: (s: AppearanceState) => void }) {
+function AppearanceSettings({
+  state,
+  setState,
+}: {
+  state: AppearanceState;
+  setState: (s: AppearanceState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div>
@@ -333,24 +373,36 @@ function AppearanceSettings({ state, setState }: { state: AppearanceState; setSt
         </div>
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="compact-mode" className="font-medium cursor-pointer">Compact Mode</Label>
+        <Label htmlFor="compact-mode" className="font-medium cursor-pointer">
+          Compact Mode
+        </Label>
         <input
           type="checkbox"
           id="compact-mode"
           checked={state.compactMode}
-          onChange={(e) => setState({ ...state, compactMode: e.target.checked })}
+          onChange={(e) =>
+            setState({ ...state, compactMode: e.target.checked })
+          }
           className="w-4 h-4 accent-primary"
         />
       </div>
     </div>
-  )
+  );
 }
 
-function MessagesMediaSettings({ state, setState }: { state: MessagesMediaState; setState: (s: MessagesMediaState) => void }) {
+function MessagesMediaSettings({
+  state,
+  setState,
+}: {
+  state: MessagesMediaState;
+  setState: (s: MessagesMediaState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="auto-play" className="font-medium cursor-pointer">Auto-play Media</Label>
+        <Label htmlFor="auto-play" className="font-medium cursor-pointer">
+          Auto-play Media
+        </Label>
         <input
           type="checkbox"
           id="auto-play"
@@ -360,7 +412,9 @@ function MessagesMediaSettings({ state, setState }: { state: MessagesMediaState;
         />
       </div>
       <div>
-        <Label htmlFor="image-quality" className="mb-2.5 block font-medium">Image Quality</Label>
+        <Label htmlFor="image-quality" className="mb-2.5 block font-medium">
+          Image Quality
+        </Label>
         <select
           id="image-quality"
           value={state.imageQuality}
@@ -373,7 +427,9 @@ function MessagesMediaSettings({ state, setState }: { state: MessagesMediaState;
         </select>
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="enable-gifs" className="font-medium cursor-pointer">Enable GIFs</Label>
+        <Label htmlFor="enable-gifs" className="font-medium cursor-pointer">
+          Enable GIFs
+        </Label>
         <input
           type="checkbox"
           id="enable-gifs"
@@ -383,14 +439,22 @@ function MessagesMediaSettings({ state, setState }: { state: MessagesMediaState;
         />
       </div>
     </div>
-  )
+  );
 }
 
-function LanguageRegionSettings({ state, setState }: { state: LanguageRegionState; setState: (s: LanguageRegionState) => void }) {
+function LanguageRegionSettings({
+  state,
+  setState,
+}: {
+  state: LanguageRegionState;
+  setState: (s: LanguageRegionState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div>
-        <Label htmlFor="language" className="mb-2.5 block font-medium">Language</Label>
+        <Label htmlFor="language" className="mb-2.5 block font-medium">
+          Language
+        </Label>
         <select
           id="language"
           value={state.language}
@@ -405,7 +469,9 @@ function LanguageRegionSettings({ state, setState }: { state: LanguageRegionStat
         </select>
       </div>
       <div>
-        <Label htmlFor="region" className="mb-2.5 block font-medium">Region</Label>
+        <Label htmlFor="region" className="mb-2.5 block font-medium">
+          Region
+        </Label>
         <select
           id="region"
           value={state.region}
@@ -420,7 +486,9 @@ function LanguageRegionSettings({ state, setState }: { state: LanguageRegionStat
         </select>
       </div>
       <div>
-        <Label htmlFor="timezone" className="mb-2.5 block font-medium">Timezone</Label>
+        <Label htmlFor="timezone" className="mb-2.5 block font-medium">
+          Timezone
+        </Label>
         <select
           id="timezone"
           value={state.timezone}
@@ -435,34 +503,50 @@ function LanguageRegionSettings({ state, setState }: { state: LanguageRegionStat
         </select>
       </div>
     </div>
-  )
+  );
 }
 
-function AccessibilitySettings({ state, setState }: { state: AccessibilityState; setState: (s: AccessibilityState) => void }) {
+function AccessibilitySettings({
+  state,
+  setState,
+}: {
+  state: AccessibilityState;
+  setState: (s: AccessibilityState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="reduce-motion" className="font-medium cursor-pointer">Reduce Motion</Label>
+        <Label htmlFor="reduce-motion" className="font-medium cursor-pointer">
+          Reduce Motion
+        </Label>
         <input
           type="checkbox"
           id="reduce-motion"
           checked={state.reduceMotion}
-          onChange={(e) => setState({ ...state, reduceMotion: e.target.checked })}
+          onChange={(e) =>
+            setState({ ...state, reduceMotion: e.target.checked })
+          }
           className="w-4 h-4 accent-primary"
         />
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="high-contrast" className="font-medium cursor-pointer">High Contrast</Label>
+        <Label htmlFor="high-contrast" className="font-medium cursor-pointer">
+          High Contrast
+        </Label>
         <input
           type="checkbox"
           id="high-contrast"
           checked={state.highContrast}
-          onChange={(e) => setState({ ...state, highContrast: e.target.checked })}
+          onChange={(e) =>
+            setState({ ...state, highContrast: e.target.checked })
+          }
           className="w-4 h-4 accent-primary"
         />
       </div>
       <div>
-        <Label htmlFor="font-size" className="mb-2.5 block font-medium">Font Size</Label>
+        <Label htmlFor="font-size" className="mb-2.5 block font-medium">
+          Font Size
+        </Label>
         <select
           id="font-size"
           value={state.fontSize}
@@ -476,20 +560,30 @@ function AccessibilitySettings({ state, setState }: { state: AccessibilityState;
         </select>
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="screen-reader" className="font-medium cursor-pointer">Screen Reader Support</Label>
+        <Label htmlFor="screen-reader" className="font-medium cursor-pointer">
+          Screen Reader Support
+        </Label>
         <input
           type="checkbox"
           id="screen-reader"
           checked={state.screenReader}
-          onChange={(e) => setState({ ...state, screenReader: e.target.checked })}
+          onChange={(e) =>
+            setState({ ...state, screenReader: e.target.checked })
+          }
           className="w-4 h-4 accent-primary"
         />
       </div>
     </div>
-  )
+  );
 }
 
-function MarkAsReadSettings({ state, setState }: { state: MarkAsReadState; setState: (s: MarkAsReadState) => void }) {
+function MarkAsReadSettings({
+  state,
+  setState,
+}: {
+  state: MarkAsReadState;
+  setState: (s: MarkAsReadState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div>
@@ -518,24 +612,36 @@ function MarkAsReadSettings({ state, setState }: { state: MarkAsReadState; setSt
         </div>
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="read-on-click" className="font-medium cursor-pointer">Mark Read on Click</Label>
+        <Label htmlFor="read-on-click" className="font-medium cursor-pointer">
+          Mark Read on Click
+        </Label>
         <input
           type="checkbox"
           id="read-on-click"
           checked={state.readOnClick}
-          onChange={(e) => setState({ ...state, readOnClick: e.target.checked })}
+          onChange={(e) =>
+            setState({ ...state, readOnClick: e.target.checked })
+          }
           className="w-4 h-4 accent-primary"
         />
       </div>
     </div>
-  )
+  );
 }
 
-function AudioVideoSettings({ state, setState }: { state: AudioVideoState; setState: (s: AudioVideoState) => void }) {
+function AudioVideoSettings({
+  state,
+  setState,
+}: {
+  state: AudioVideoState;
+  setState: (s: AudioVideoState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div>
-        <Label htmlFor="video-quality" className="mb-2.5 block font-medium">Video Quality</Label>
+        <Label htmlFor="video-quality" className="mb-2.5 block font-medium">
+          Video Quality
+        </Label>
         <select
           id="video-quality"
           value={state.videoQuality}
@@ -549,7 +655,9 @@ function AudioVideoSettings({ state, setState }: { state: AudioVideoState; setSt
         </select>
       </div>
       <div>
-        <Label htmlFor="audio-output" className="mb-2.5 block font-medium">Audio Output</Label>
+        <Label htmlFor="audio-output" className="mb-2.5 block font-medium">
+          Audio Output
+        </Label>
         <select
           id="audio-output"
           value={state.audioOutput}
@@ -562,17 +670,23 @@ function AudioVideoSettings({ state, setState }: { state: AudioVideoState; setSt
         </select>
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="video-captions" className="font-medium cursor-pointer">Video Captions</Label>
+        <Label htmlFor="video-captions" className="font-medium cursor-pointer">
+          Video Captions
+        </Label>
         <input
           type="checkbox"
           id="video-captions"
           checked={state.videoCaptions}
-          onChange={(e) => setState({ ...state, videoCaptions: e.target.checked })}
+          onChange={(e) =>
+            setState({ ...state, videoCaptions: e.target.checked })
+          }
           className="w-4 h-4 accent-primary"
         />
       </div>
       <div>
-        <Label htmlFor="microphone" className="mb-2.5 block font-medium">Microphone</Label>
+        <Label htmlFor="microphone" className="mb-2.5 block font-medium">
+          Microphone
+        </Label>
         <select
           id="microphone"
           value={state.microphone}
@@ -585,7 +699,7 @@ function AudioVideoSettings({ state, setState }: { state: AudioVideoState; setSt
         </select>
       </div>
     </div>
-  )
+  );
 }
 
 function ConnectedAccountsSettings() {
@@ -596,27 +710,39 @@ function ConnectedAccountsSettings() {
           <p className="font-semibold text-sm">Google</p>
           <p className="text-xs text-muted-foreground mt-1">user@gmail.com</p>
         </div>
-        <Button variant="outline" size="sm" className="font-medium">Disconnect</Button>
+        <Button variant="outline" size="sm" className="font-medium">
+          Disconnect
+        </Button>
       </div>
       <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
         <div>
           <p className="font-semibold text-sm">GitHub</p>
           <p className="text-xs text-muted-foreground mt-1">Not connected</p>
         </div>
-        <Button size="sm" className="font-medium">Connect</Button>
+        <Button size="sm" className="font-medium">
+          Connect
+        </Button>
       </div>
       <div className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
         <div>
           <p className="font-semibold text-sm">Discord</p>
           <p className="text-xs text-muted-foreground mt-1">Not connected</p>
         </div>
-        <Button size="sm" className="font-medium">Connect</Button>
+        <Button size="sm" className="font-medium">
+          Connect
+        </Button>
       </div>
     </div>
-  )
+  );
 }
 
-function PrivacyVisibilitySettings({ state, setState }: { state: PrivacyVisibilityState; setState: (s: PrivacyVisibilityState) => void }) {
+function PrivacyVisibilitySettings({
+  state,
+  setState,
+}: {
+  state: PrivacyVisibilityState;
+  setState: (s: PrivacyVisibilityState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div>
@@ -627,7 +753,9 @@ function PrivacyVisibilitySettings({ state, setState }: { state: PrivacyVisibili
               type="radio"
               name="visibility"
               checked={state.profileVisibility === "public"}
-              onChange={() => setState({ ...state, profileVisibility: "public" })}
+              onChange={() =>
+                setState({ ...state, profileVisibility: "public" })
+              }
               className="w-4 h-4 accent-primary"
             />
             <span className="ml-3 font-medium">Public</span>
@@ -637,7 +765,9 @@ function PrivacyVisibilitySettings({ state, setState }: { state: PrivacyVisibili
               type="radio"
               name="visibility"
               checked={state.profileVisibility === "friends"}
-              onChange={() => setState({ ...state, profileVisibility: "friends" })}
+              onChange={() =>
+                setState({ ...state, profileVisibility: "friends" })
+              }
               className="w-4 h-4 accent-primary"
             />
             <span className="ml-3 font-medium">Friends Only</span>
@@ -647,7 +777,9 @@ function PrivacyVisibilitySettings({ state, setState }: { state: PrivacyVisibili
               type="radio"
               name="visibility"
               checked={state.profileVisibility === "private"}
-              onChange={() => setState({ ...state, profileVisibility: "private" })}
+              onChange={() =>
+                setState({ ...state, profileVisibility: "private" })
+              }
               className="w-4 h-4 accent-primary"
             />
             <span className="ml-3 font-medium">Private</span>
@@ -655,44 +787,64 @@ function PrivacyVisibilitySettings({ state, setState }: { state: PrivacyVisibili
         </div>
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="show-activity" className="font-medium cursor-pointer">Show Activity Status</Label>
+        <Label htmlFor="show-activity" className="font-medium cursor-pointer">
+          Show Activity Status
+        </Label>
         <input
           type="checkbox"
           id="show-activity"
           checked={state.showActivity}
-          onChange={(e) => setState({ ...state, showActivity: e.target.checked })}
+          onChange={(e) =>
+            setState({ ...state, showActivity: e.target.checked })
+          }
           className="w-4 h-4 accent-primary"
         />
       </div>
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="allow-messages" className="font-medium cursor-pointer">Allow Messages from Anyone</Label>
+        <Label htmlFor="allow-messages" className="font-medium cursor-pointer">
+          Allow Messages from Anyone
+        </Label>
         <input
           type="checkbox"
           id="allow-messages"
           checked={state.allowMessages}
-          onChange={(e) => setState({ ...state, allowMessages: e.target.checked })}
+          onChange={(e) =>
+            setState({ ...state, allowMessages: e.target.checked })
+          }
           className="w-4 h-4 accent-primary"
         />
       </div>
     </div>
-  )
+  );
 }
 
-function AdvancedSettings({ state, setState }: { state: AdvancedState; setState: (s: AdvancedState) => void }) {
+function AdvancedSettings({
+  state,
+  setState,
+}: {
+  state: AdvancedState;
+  setState: (s: AdvancedState) => void;
+}) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors">
-        <Label htmlFor="beta-features" className="font-medium cursor-pointer">Beta Features</Label>
+        <Label htmlFor="beta-features" className="font-medium cursor-pointer">
+          Beta Features
+        </Label>
         <input
           type="checkbox"
           id="beta-features"
           checked={state.betaFeatures}
-          onChange={(e) => setState({ ...state, betaFeatures: e.target.checked })}
+          onChange={(e) =>
+            setState({ ...state, betaFeatures: e.target.checked })
+          }
           className="w-4 h-4 accent-primary"
         />
       </div>
       <div>
-        <Label htmlFor="log-level" className="mb-2.5 block font-medium">Log Level</Label>
+        <Label htmlFor="log-level" className="mb-2.5 block font-medium">
+          Log Level
+        </Label>
         <select
           id="log-level"
           value={state.logLevel}
@@ -706,66 +858,76 @@ function AdvancedSettings({ state, setState }: { state: AdvancedState; setState:
         </select>
       </div>
     </div>
-  )
+  );
 }
 
 const settingsContent: Record<string, (props: any) => React.ReactNode> = {
-  "Notifications": NotificationsSettings,
-  "Navigation": NavigationSettings,
-  "Home": HomeSettings,
-  "Appearance": AppearanceSettings,
+  Notifications: NotificationsSettings,
+  Navigation: NavigationSettings,
+  Home: HomeSettings,
+  Appearance: AppearanceSettings,
   "Messages & media": MessagesMediaSettings,
   "Language & region": LanguageRegionSettings,
-  "Accessibility": AccessibilitySettings,
+  Accessibility: AccessibilitySettings,
   "Mark as read": MarkAsReadSettings,
   "Audio & video": AudioVideoSettings,
   "Connected accounts": ConnectedAccountsSettings,
   "Privacy & visibility": PrivacyVisibilitySettings,
-  "Advanced": AdvancedSettings,
-}
+  Advanced: AdvancedSettings,
+};
 
 export function SettingsDialog({
   open,
   onOpenChange,
 }: {
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
-  const [activeSection, setActiveSection] = React.useState("Notifications")
-  const [states, setStates] = React.useState(initialStates)
-  const [hasChanges, setHasChanges] = React.useState(false)
+  const [activeSection, setActiveSection] = React.useState("Notifications");
+  const [states, setStates] = React.useState(initialStates);
+  const [hasChanges, setHasChanges] = React.useState(false);
 
-  const currentState = React.useMemo(() => states[activeSection as keyof typeof states] || {}, [states, activeSection])
-  const initialState = React.useMemo(() => initialStates[activeSection as keyof typeof initialStates] || {}, [activeSection])
+  const currentState = React.useMemo(
+    () => states[activeSection as keyof typeof states] || {},
+    [states, activeSection],
+  );
+  const initialState = React.useMemo(
+    () => initialStates[activeSection as keyof typeof initialStates] || {},
+    [activeSection],
+  );
 
   // Check if current state has changes from initial state
   React.useEffect(() => {
-    const changed = JSON.stringify(currentState) !== JSON.stringify(initialState)
-    setHasChanges(changed)
-  }, [currentState, initialState])
+    const changed =
+      JSON.stringify(currentState) !== JSON.stringify(initialState);
+    setHasChanges(changed);
+  }, [currentState, initialState]);
 
   const handleStateChange = (newState: any) => {
     setStates({
       ...states,
       [activeSection]: newState,
-    })
-  }
+    });
+  };
 
   const handleSave = () => {
     // Save logic here
-    console.log("Settings saved:", states[activeSection as keyof typeof states])
-    setHasChanges(false)
-  }
+    console.log(
+      "Settings saved:",
+      states[activeSection as keyof typeof states],
+    );
+    setHasChanges(false);
+  };
 
   const handleDiscard = () => {
     // Reset to initial state
     setStates({
       ...states,
       [activeSection]: initialState,
-    })
-  }
+    });
+  };
 
-  const ContentComponent = settingsContent[activeSection]
+  const ContentComponent = settingsContent[activeSection];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -815,7 +977,9 @@ export function SettingsDialog({
             <div className="flex-1 overflow-y-auto px-5 pt-5">
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-semibold mb-1">{activeSection}</h2>
+                  <h2 className="text-lg font-semibold mb-1">
+                    {activeSection}
+                  </h2>
                   <p className="text-muted-foreground text-sm">
                     Configure your {activeSection.toLowerCase()} preferences.
                   </p>
@@ -832,10 +996,19 @@ export function SettingsDialog({
             {hasChanges && (
               <div className="shrink-0 border-t px-5 py-4 mt-2">
                 <div className="flex items-center justify-end gap-3">
-                  <Button variant="outline" size="sm" onClick={handleDiscard} className="font-medium">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDiscard}
+                    className="font-medium"
+                  >
                     Discard
                   </Button>
-                  <Button size="sm" onClick={handleSave} className="font-medium">
+                  <Button
+                    size="sm"
+                    onClick={handleSave}
+                    className="font-medium"
+                  >
                     Save Changes
                   </Button>
                 </div>
@@ -845,5 +1018,5 @@ export function SettingsDialog({
         </SidebarProvider>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -26,8 +26,8 @@ Meet [Helixque](https://github.com/HXQLabs/Helixque), a professional real-time v
 
 > Helixque is continuously evolving. Your suggestions, ideas, and reported bugs help us immensely. Do not hesitate to join the conversation on [Discord](https://discord.gg/dQUh6SY9Uk) or raise a GitHub issue. We read everything and respond to most.
 
-
 ## Note
+
 You can now preview the latest updates and improvements every 2–3 days at the following link:
 👉 [Helixque-Changes](https://helixque-changes.netlify.app/)
 
@@ -51,7 +51,6 @@ This project uses `pnpm` for dependency management.
 pnpm install
 
 ```
-
 
 3. **Start development servers**
 
@@ -92,13 +91,7 @@ The frontend is a **Turborepo** workspace managing the Next.js application and s
 - **`apps/web`**: Main Next.js application (App Router).
 - **`packages/ui`**: Shared UI components (shadcn/ui).
 
-
-
-
-
 > **Note:** Frontend requires HTTPS in production for getUserMedia to function correctly. Device permissions must be granted by the user.
-
-
 
 ## ⚙️ Built With
 
@@ -133,10 +126,9 @@ Deploy the `apps/web` project to Vercel. Ensure you set the `Root Directory` to 
 
  -->
 
-
 ## ❤️ Community
 
-Join the Helixque community on [Discord](https://discord.gg/dQUh6SY9Uk) and [GitHub Discussions](https://github.com/HXQLabs/Helixque/discussions). 
+Join the Helixque community on [Discord](https://discord.gg/dQUh6SY9Uk) and [GitHub Discussions](https://github.com/HXQLabs/Helixque/discussions).
 
 Feel free to ask questions, report bugs, participate in discussions, share ideas, request features, or showcase your projects. We'd love to hear from you!
 
@@ -169,7 +161,6 @@ There are many ways you can contribute to Helixque:
 ### Repo Activity
 
 ![Helixque Repo Activity](https://repobeats.axiom.co/api/embed/f0046398b3e592f1b5a12b7f6b32e00839c2814b.svg "Repobeats analytics image")
-
 
 ### We Couldn't Have Done This Without You
 

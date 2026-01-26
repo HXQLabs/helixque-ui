@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
-import { useNavigation } from "@/contexts/navigation-context"
+import { ChevronRight, type LucideIcon } from "lucide-react";
+import { useNavigation } from "@/contexts/navigation-context";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@workspace/ui/components/collapsible"
+} from "@workspace/ui/components/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -17,23 +17,23 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@workspace/ui/components/sidebar"
+} from "@workspace/ui/components/sidebar";
 
 export function NavMain({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    isActive?: boolean;
     items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+      title: string;
+      url: string;
+    }[];
+  }[];
 }) {
-  const { activeSection, activeSubSection, setActiveSection } = useNavigation()
+  const { activeSection, activeSubSection, setActiveSection } = useNavigation();
 
   return (
     <SidebarGroup>
@@ -59,8 +59,13 @@ export function NavMain({
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton
-                        isActive={activeSection === item.title && activeSubSection === subItem.title}
-                        onClick={() => setActiveSection(item.title, subItem.title)}
+                        isActive={
+                          activeSection === item.title &&
+                          activeSubSection === subItem.title
+                        }
+                        onClick={() =>
+                          setActiveSection(item.title, subItem.title)
+                        }
                       >
                         <span>{subItem.title}</span>
                       </SidebarMenuSubButton>
@@ -73,5 +78,5 @@ export function NavMain({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { type LucideIcon } from "lucide-react"
-import { Badge } from "@workspace/ui/components/badge"
+import { type LucideIcon } from "lucide-react";
+import { Badge } from "@workspace/ui/components/badge";
 
 import {
   SidebarGroup,
@@ -9,27 +9,29 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@workspace/ui/components/sidebar"
+} from "@workspace/ui/components/sidebar";
 
 export function NavSocials({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon: LucideIcon
-    badge?: number
-  }[]
+    title: string;
+    url: string;
+    icon: LucideIcon;
+    badge?: number;
+  }[];
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Socials</SidebarGroupLabel>
+      <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
+        Socials
+      </SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton 
-              asChild 
-              tooltip={item.title} 
+            <SidebarMenuButton
+              asChild
+              tooltip={item.title}
               className="cursor-pointer"
             >
               <a href={item.url}>
@@ -41,5 +43,5 @@ export function NavSocials({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

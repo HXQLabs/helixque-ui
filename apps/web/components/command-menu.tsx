@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useRouter } from "next/navigation"
+import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
   Calculator,
   Calendar,
@@ -9,7 +9,7 @@ import {
   Settings,
   Smile,
   User,
-} from "lucide-react"
+} from "lucide-react";
 
 import {
   CommandDialog,
@@ -20,30 +20,30 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from "@workspace/ui/components/command"
-import { SettingsDialog } from "./settings-dialog"
+} from "@workspace/ui/components/command";
+import { SettingsDialog } from "./settings-dialog";
 
 export function CommandMenu() {
-  const [open, setOpen] = React.useState(false)
-  const [settingsOpen, setSettingsOpen] = React.useState(false)
-  const router = useRouter()
+  const [open, setOpen] = React.useState(false);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const router = useRouter();
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpen((open) => !open)
+        e.preventDefault();
+        setOpen((open) => !open);
       }
-    }
+    };
 
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [])
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
 
   const handleSettingsClick = () => {
-    setOpen(false)
-    setSettingsOpen(true)
-  }
+    setOpen(false);
+    setSettingsOpen(true);
+  };
 
   return (
     <>
@@ -91,5 +91,5 @@ export function CommandMenu() {
 
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </>
-  )
+  );
 }

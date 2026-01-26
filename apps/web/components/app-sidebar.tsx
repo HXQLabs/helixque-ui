@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Image from "next/image"
+import * as React from "react";
+import Image from "next/image";
 import {
   AudioWaveform,
   BookOpen,
@@ -18,13 +18,13 @@ import {
   Settings2,
   SquareTerminal,
   Zap,
-} from "lucide-react"
+} from "lucide-react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavProFeatures } from "@/components/nav-pro-features"
-import { NavSocials } from "@/components/nav-socials"
-import { NavConnect } from "@/components/nav-connect"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav-main";
+import { NavProFeatures } from "@/components/nav-pro-features";
+import { NavSocials } from "@/components/nav-socials";
+import { NavConnect } from "@/components/nav-connect";
+import { NavUser } from "@/components/nav-user";
 // import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
@@ -35,7 +35,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "@workspace/ui/components/sidebar"
+} from "@workspace/ui/components/sidebar";
 
 // This is sample data.
 const data = {
@@ -216,7 +216,7 @@ const data = {
       badge: 0,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -229,7 +229,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <a href="#">
                 <div className="bg-sidebar text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   {/* <GalleryVerticalEnd className="size-4" /> */}
-                  <Image src="https://www.helixque.com/logo.svg" alt="Helixque Logo" width={32} height={32} />
+                  <Image
+                    src="https://www.helixque.com/logo.svg"
+                    alt="Helixque Logo"
+                    width={32}
+                    height={32}
+                  />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">Helixque</span>
@@ -260,5 +265,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
