@@ -1,7 +1,7 @@
 "use client";
 
 import { type LucideIcon } from "lucide-react";
-import Link from "next/link";
+import { Badge } from "@workspace/ui/components/badge";
 
 import {
   SidebarGroup,
@@ -34,10 +34,10 @@ export function NavSocials({
               tooltip={item.title}
               className="cursor-pointer"
             >
-              <Link href={item.url}>
+              <a href={item.url}>
                 <item.icon className="size-4" />
                 <span>{item.title}</span>
-              </Link>
+              </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

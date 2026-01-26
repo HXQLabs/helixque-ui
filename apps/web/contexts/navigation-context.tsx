@@ -1,13 +1,11 @@
 "use client";
 
-import { useHelixque } from "@workspace/state";
 import * as React from "react";
 
 interface NavigationContextType {
   activeSection: string;
   activeSubSection: string | null;
   setActiveSection: (section: string, subSection?: string | null) => void;
-  setActiveSubSection: (subSection: string | null) => void;
 }
 
 const NavigationContext = React.createContext<
@@ -19,12 +17,10 @@ export function NavigationProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const {
-    activeSubSection,
-    activeSection,
-    setActiveSubSection,
-    setActiveSectionState,
-  } = useHelixque();
+  const [activeSection, setActiveSectionState] = React.useState("Playground");
+  const [activeSubSection, setActiveSubSection] = React.useState<string | null>(
+    "History",
+  );
 
   const setActiveSection = React.useCallback(
     (section: string, subSection?: string | null) => {
@@ -36,7 +32,7 @@ export function NavigationProvider({
 
   return (
     <NavigationContext.Provider
-      value={{ activeSection, activeSubSection, setActiveSection, setActiveSubSection }}
+      value={{ activeSection, activeSubSection, setActiveSection }}
     >
       {children}
     </NavigationContext.Provider>

@@ -1,6 +1,6 @@
 "use client";
+
 import * as React from "react";
-import Link from "next/link";
 import {
   BadgeCheck,
   Bell,
@@ -9,7 +9,6 @@ import {
   LogOut,
   Settings,
   Sparkles,
-  UserIcon,
 } from "lucide-react";
 import { SettingsDialog } from "./settings-dialog";
 
@@ -33,7 +32,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
-import { useHelixque } from "@workspace/state";
 
 export function NavUser({
   user,
@@ -45,7 +43,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const { settingsOpen, setSettingsOpen } = useHelixque();
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   return (
     <SidebarMenu>
@@ -87,44 +85,28 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/upgrade" className="w-full cursor-pointer">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Upgrade to Pro
-                </Link>
+              <DropdownMenuItem>
+                <Sparkles />
+                Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup> 
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/edit-profile" className="w-full cursor-pointer">
-                  <UserIcon className="mr-2 h-4 w-4" />
-                  Profile
-                </Link>
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <BadgeCheck />
+                Account
               </DropdownMenuItem>
-               <DropdownMenuItem asChild>
-                 <Link href="/dashboard/settings?tab=account" className="w-full cursor-pointer">
-                  <BadgeCheck className="mr-2 h-4 w-4" />
-                  Account
-                 </Link>
+              <DropdownMenuItem>
+                <CreditCard />
+                Billing
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                 <Link href="/dashboard/billing" className="w-full cursor-pointer">
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Billing
-                 </Link>
+              <DropdownMenuItem>
+                <Bell />
+                Notifications
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                 <Link href="/dashboard/settings?tab=notifications" className="w-full cursor-pointer">
-                  <Bell className="mr-2 h-4 w-4" />
-                  Notifications
-                 </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                 <Link href="/dashboard/settings" className="w-full cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                 </Link>
+              <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                <Settings />
+                Settings
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
