@@ -31,7 +31,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,8 +69,14 @@ export default function CalendarPage() {
       duration: "1 hour",
       type: "professional",
       participants: [
-        { name: "Sarah Chen", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" },
-        { name: "Mike Ross", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike" },
+        {
+          name: "Sarah Chen",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
+        },
+        {
+          name: "Mike Ross",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Mike",
+        },
       ],
       color: "blue",
     },
@@ -77,7 +87,10 @@ export default function CalendarPage() {
       duration: "30 min",
       type: "anonymous",
       participants: [
-        { name: "Anonymous", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anon1" },
+        {
+          name: "Anonymous",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anon1",
+        },
       ],
       color: "purple",
     },
@@ -88,9 +101,18 @@ export default function CalendarPage() {
       duration: "45 min",
       type: "professional",
       participants: [
-        { name: "Jessica", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica" },
-        { name: "Tom", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Tom" },
-        { name: "Anna", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anna" },
+        {
+          name: "Jessica",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Jessica",
+        },
+        {
+          name: "Tom",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Tom",
+        },
+        {
+          name: "Anna",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Anna",
+        },
       ],
       color: "green",
     },
@@ -205,9 +227,7 @@ export default function CalendarPage() {
                 {date?.toLocaleDateString("en-US", { weekday: "short" })}
               </Badge>
             </div>
-            <div className="text-4xl font-bold mb-2">
-              {date?.getDate()}
-            </div>
+            <div className="text-4xl font-bold mb-2">{date?.getDate()}</div>
             <p className="text-sm text-muted-foreground">
               {date?.toLocaleDateString("en-US", {
                 month: "long",
@@ -295,7 +315,11 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm" className="opacity-0 group-hover:opacity-100">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="opacity-0 group-hover:opacity-100"
+            >
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -305,7 +329,9 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
               Join Meeting
             </DropdownMenuItem>
             <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive">Cancel</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive">
+              Cancel
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -325,7 +351,10 @@ function MeetingCard({ meeting }: { meeting: Meeting }) {
             </div>
           )}
         </div>
-        <Badge variant="secondary" className={`text-xs ${typeColors[meeting.type]}`}>
+        <Badge
+          variant="secondary"
+          className={`text-xs ${typeColors[meeting.type]}`}
+        >
           {meeting.type}
         </Badge>
       </div>

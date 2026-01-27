@@ -34,7 +34,13 @@ interface ControlBarProps {
   onReport: () => void;
 }
 
-function HelperTooltip({ content, children }: { content: React.ReactNode; children: React.ReactNode }) {
+function HelperTooltip({
+  content,
+  children,
+}: {
+  content: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <TooltipProvider>
       <Tooltip>
@@ -57,7 +63,7 @@ export default function ControlBar({
   onRecheck,
   onNext,
   onLeave,
-  onReport
+  onReport,
 }: ControlBarProps) {
   const { micOn, camOn, screenShareOn } = mediaState;
 
@@ -75,14 +81,22 @@ export default function ControlBar({
             </button>
           </HelperTooltip>
 
-          <HelperTooltip content={micOn ? "Turn off microphone" : "Turn on microphone"}>
+          <HelperTooltip
+            content={micOn ? "Turn off microphone" : "Turn on microphone"}
+          >
             <button
               onClick={onToggleMic}
               className={`cursor-pointer h-11 w-11 rounded-full flex items-center justify-center transition ${
-                micOn ? "bg-white/10 hover:bg-white/20" : "bg-red-600 hover:bg-red-500"
+                micOn
+                  ? "bg-white/10 hover:bg-white/20"
+                  : "bg-red-600 hover:bg-red-500"
               }`}
             >
-              {micOn ? <IconMicrophone className="h-5 w-5" /> : <IconMicrophoneOff className="h-5 w-5" />}
+              {micOn ? (
+                <IconMicrophone className="h-5 w-5" />
+              ) : (
+                <IconMicrophoneOff className="h-5 w-5" />
+              )}
             </button>
           </HelperTooltip>
 
@@ -90,21 +104,35 @@ export default function ControlBar({
             <button
               onClick={onToggleCam}
               className={`cursor-pointer h-11 w-11 rounded-full flex items-center justify-center transition ${
-                camOn ? "bg-white/10 hover:bg-white/20" : "bg-red-600 hover:bg-red-500"
+                camOn
+                  ? "bg-white/10 hover:bg-white/20"
+                  : "bg-red-600 hover:bg-red-500"
               }`}
             >
-              {camOn ? <IconVideo className="h-5 w-5" /> : <IconVideoOff className="h-5 w-5" />}
+              {camOn ? (
+                <IconVideo className="h-5 w-5" />
+              ) : (
+                <IconVideoOff className="h-5 w-5" />
+              )}
             </button>
           </HelperTooltip>
 
-          <HelperTooltip content={screenShareOn ? "Stop screen share" : "Start screen share"}>
+          <HelperTooltip
+            content={screenShareOn ? "Stop screen share" : "Start screen share"}
+          >
             <button
               onClick={onToggleScreenShare}
               className={`cursor-pointer h-11 w-11 rounded-full flex items-center justify-center transition ${
-                screenShareOn ? "bg-blue-600 hover:bg-blue-500" : "bg-white/10 hover:bg-white/20"
+                screenShareOn
+                  ? "bg-blue-600 hover:bg-blue-500"
+                  : "bg-white/10 hover:bg-white/20"
               }`}
             >
-              {screenShareOn ? <IconScreenShareOff className="h-5 w-5" /> : <IconScreenShare className="h-5 w-5" />}
+              {screenShareOn ? (
+                <IconScreenShareOff className="h-5 w-5" />
+              ) : (
+                <IconScreenShare className="h-5 w-5" />
+              )}
             </button>
           </HelperTooltip>
 
@@ -123,7 +151,9 @@ export default function ControlBar({
               className="cursor-pointer ml-1 mr-1 h-11 rounded-full bg-red-600 px-6 hover:bg-red-500 flex items-center justify-center gap-2"
             >
               <IconPhoneOff className="h-5 w-5" />
-              <span className="hidden sm:inline text-sm font-medium">Leave</span>
+              <span className="hidden sm:inline text-sm font-medium">
+                Leave
+              </span>
             </button>
           </HelperTooltip>
         </div>
@@ -135,13 +165,15 @@ export default function ControlBar({
               <button
                 onClick={onToggleChat}
                 className={`cursor-pointer h-11 w-11 rounded-full flex items-center justify-center transition ${
-                  showChat ? "bg-indigo-600 hover:bg-indigo-500" : "bg-white/10 hover:bg-white/20"
+                  showChat
+                    ? "bg-indigo-600 hover:bg-indigo-500"
+                    : "bg-white/10 hover:bg-white/20"
                 }`}
               >
                 <IconMessage className="h-5 w-5" />
               </button>
             </HelperTooltip>
-            
+
             <HelperTooltip content="Report user">
               <button
                 onClick={onReport}

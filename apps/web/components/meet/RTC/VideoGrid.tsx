@@ -1,10 +1,10 @@
 "use client";
 
-import { 
-  IconUser, 
-  IconLoader2, 
-  IconMicrophoneOff, 
-  IconScreenShare 
+import {
+  IconUser,
+  IconLoader2,
+  IconMicrophoneOff,
+  IconScreenShare,
 } from "@tabler/icons-react";
 
 interface MediaState {
@@ -32,17 +32,17 @@ interface VideoGridProps {
   peerState: PeerState;
 }
 
-export default function VideoGrid({ 
-  localVideoRef, 
-  remoteVideoRef, 
-  localScreenShareRef, 
+export default function VideoGrid({
+  localVideoRef,
+  remoteVideoRef,
+  localScreenShareRef,
   remoteScreenShareRef,
-  showChat, 
-  lobby, 
-  status, 
-  name, 
-  mediaState, 
-  peerState 
+  showChat,
+  lobby,
+  status,
+  name,
+  mediaState,
+  peerState,
 }: VideoGridProps) {
   const { micOn, camOn, screenShareOn } = mediaState;
   const { peerMicOn, peerCamOn, peerScreenShareOn } = peerState;
@@ -124,25 +124,34 @@ export default function VideoGrid({
   }
 
   return (
-    <div className={`grid gap-4 h-full transition-all duration-300 ${
-      showChat 
-        ? 'grid-cols-1 grid-rows-2 max-w-none' 
-        : 'grid-cols-1 sm:grid-cols-2 grid-rows-1'
-    }`}>
+    <div
+      className={`grid gap-4 h-full transition-all duration-300 ${
+        showChat
+          ? "grid-cols-1 grid-rows-2 max-w-none"
+          : "grid-cols-1 sm:grid-cols-2 grid-rows-1"
+      }`}
+    >
       {/* Remote/Peer Video */}
-      <div className={`relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
-        showChat ? 'aspect-[4/3] max-w-2xl mx-auto' : ''
-      }`}>
-        <div className={`relative w-full ${
-          showChat ? 'h-full' : 'h-full min-h-0'
-        }`}>
+      <div
+        className={`relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
+          showChat ? "aspect-[4/3] max-w-2xl mx-auto" : ""
+        }`}
+      >
+        <div
+          className={`relative w-full ${
+            showChat ? "h-full" : "h-full min-h-0"
+          }`}
+        >
           <video
             ref={remoteVideoRef}
             autoPlay
             playsInline
             className={`absolute inset-0 h-full w-full ${
-              peerScreenShareOn ? 'object-contain' : 
-              showChat ? 'object-cover' : 'object-cover'
+              peerScreenShareOn
+                ? "object-contain"
+                : showChat
+                  ? "object-cover"
+                  : "object-cover"
             }`}
           />
 
@@ -153,13 +162,13 @@ export default function VideoGrid({
               <span className="text-sm text-white/70">{status}</span>
             </div>
           )}
-          
+
           {!peerCamOn && !lobby && (
             <div className="absolute inset-0 flex items-center justify-center bg-black">
               <IconUser className="h-12 w-12 text-white/70" />
             </div>
           )}
-          
+
           {/* Remote label with indicators */}
           <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-md bg-black/60 px-2 py-1 text-xs">
             <span>{lobby ? "—" : "Peer"}</span>
@@ -180,28 +189,32 @@ export default function VideoGrid({
       </div>
 
       {/* Local/Your Video */}
-      <div className={`relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
-        showChat ? 'aspect-[4/3] max-w-2xl mx-auto' : ''
-      }`}>
-        <div className={`relative w-full ${
-          showChat ? 'h-full' : 'h-full min-h-0'
-        }`}>
+      <div
+        className={`relative overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_10px_40px_rgba(0,0,0,0.5)] ${
+          showChat ? "aspect-[4/3] max-w-2xl mx-auto" : ""
+        }`}
+      >
+        <div
+          className={`relative w-full ${
+            showChat ? "h-full" : "h-full min-h-0"
+          }`}
+        >
           <video
             ref={localVideoRef}
             autoPlay
             playsInline
             muted
             className={`absolute inset-0 h-full w-full ${
-              showChat ? 'object-cover' : 'object-cover'
+              showChat ? "object-cover" : "object-cover"
             }`}
           />
-          
+
           {!camOn && (
             <div className="absolute inset-0 flex items-center justify-center bg-black">
               <IconUser className="h-12 w-12 text-white/70" />
             </div>
           )}
-          
+
           {/* Local label with indicators */}
           <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-md bg-black/60 px-2 py-1 text-xs">
             <span>{name || "You"}</span>

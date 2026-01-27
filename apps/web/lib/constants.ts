@@ -89,7 +89,7 @@ export const TECH_STACK = [
   "TailwindCSS",
   "Bootstrap",
   "Material UI",
-  
+
   // Backend
   "Node.js",
   "Express",
@@ -104,14 +104,14 @@ export const TECH_STACK = [
   "Laravel",
   "Symfony",
   "Phoenix",
-  
+
   // Mobile
   "React Native",
   "Flutter",
   "SwiftUI",
   "Jetpack Compose",
   "Ionic",
-  
+
   // Database & Tools
   "Docker",
   "Kubernetes",

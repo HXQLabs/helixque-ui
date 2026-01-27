@@ -31,13 +31,14 @@ import { useEffect } from "react";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { activeSection, activeSubSection } = useNavigation();
-  const { tourOpen, setTourOpen } = useHelixque();
+  const tourOpen = useHelixque((state) => state.tourOpen);
+  const setTourOpen = useHelixque((state) => state.setTourOpen);
   /* Removed duplicate line */
 
   return (
     <>
       <React.Suspense fallback={null}>
-         <TourInitializer setTourOpen={setTourOpen} />
+        <TourInitializer setTourOpen={setTourOpen} />
       </React.Suspense>
       <Tour.Root open={tourOpen} onOpenChange={setTourOpen}>
         <Tour.Portal>
@@ -98,7 +99,8 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             <Tour.Header>
               <Tour.Title>Community Hub</Tour.Title>
               <Tour.Description>
-                Join upcoming events, participate in discussions, and connect with peers.
+                Join upcoming events, participate in discussions, and connect
+                with peers.
               </Tour.Description>
             </Tour.Header>
             <Tour.Footer>
@@ -205,7 +207,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function TourInitializer({ setTourOpen }: { setTourOpen: (open: boolean) => void }) {
+function TourInitializer({
+  setTourOpen,
+}: {
+  setTourOpen: (open: boolean) => void;
+}) {
   const searchParams = useSearchParams();
   useEffect(() => {
     if (searchParams.get("tour") === "true") {

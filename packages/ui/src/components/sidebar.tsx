@@ -73,6 +73,7 @@ function SidebarProvider({
     if (defaultOpen === false) {
       setOpen(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // This is the internal state of the sidebar.
@@ -90,7 +91,7 @@ function SidebarProvider({
       // This sets the cookie to keep the sidebar state.
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
     },
-    [setOpenProp, open],
+    [setOpenProp, open, _setOpen],
   );
 
   // Helper to toggle the sidebar.

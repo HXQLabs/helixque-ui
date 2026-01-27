@@ -21,18 +21,26 @@ export const MatchMode = z.enum(["STRICT", "LOOSE"]);
 // User Preferences Schema
 // User Preferences Schema
 export const UserProfileSchema = z.object({
-  languages: z.array(z.union([z.enum(SPOKEN_LANGUAGES), z.string()])).describe("Spoken languages"),
+  languages: z
+    .array(z.union([z.enum(SPOKEN_LANGUAGES), z.string()]))
+    .describe("Spoken languages"),
   role: z.union([z.enum(ROLES), z.string()]).describe("Current role"),
   domain: z.union([z.enum(DOMAINS), z.string()]).describe("Industry domain"),
-  techStack: z.array(z.union([z.enum(TECH_STACK), z.string()])).describe("List of known technologies"),
+  techStack: z
+    .array(z.union([z.enum(TECH_STACK), z.string()]))
+    .describe("List of known technologies"),
   experience: z.enum(EXPERIENCE_LEVELS).describe("Experience Range (Years)"),
 });
 
 export const UserCriteriaSchema = z.object({
-  languages: z.array(z.union([z.enum(SPOKEN_LANGUAGES), z.string()])).describe("Target spoken languages"),
+  languages: z
+    .array(z.union([z.enum(SPOKEN_LANGUAGES), z.string()]))
+    .describe("Target spoken languages"),
   role: z.union([z.enum(ROLES), z.string()]).describe("Target role"),
   domain: z.union([z.enum(DOMAINS), z.string()]).describe("Target domain"),
-  techStack: z.array(z.union([z.enum(TECH_STACK), z.string()])).describe("List of desired technologies"),
+  techStack: z
+    .array(z.union([z.enum(TECH_STACK), z.string()]))
+    .describe("List of desired technologies"),
   minExperience: z.enum(EXPERIENCE_LEVELS).describe("Minimum experience range"),
 });
 
@@ -57,7 +65,10 @@ export const UserSchema = z.object({
   myProfile: UserProfileSchema,
   lookingFor: UserCriteriaSchema,
   availability: UserAvailabilitySchema.optional(),
-  strictPrefKey: z.string().optional().describe("Normalized preference string for strict matching"),
+  strictPrefKey: z
+    .string()
+    .optional()
+    .describe("Normalized preference string for strict matching"),
   ratingScore: z.number().default(0),
   ratingCount: z.number().default(0),
   reportsCount: z.number().default(0),

@@ -100,43 +100,61 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/dashboard/upgrade" className="w-full cursor-pointer">
+                <Link
+                  href="/dashboard/upgrade"
+                  className="w-full cursor-pointer"
+                >
                   <Sparkles className="mr-2 h-4 w-4" />
                   Upgrade to Pro
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup> 
+            <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/dashboard/edit-profile" className="w-full cursor-pointer">
+                <Link
+                  href="/dashboard/edit-profile"
+                  className="w-full cursor-pointer"
+                >
                   <UserIcon className="mr-2 h-4 w-4" />
                   Profile
                 </Link>
               </DropdownMenuItem>
-               <DropdownMenuItem asChild>
-                 <Link href="/dashboard/settings?tab=account" className="w-full cursor-pointer">
+              <DropdownMenuItem asChild>
+                <Link
+                  href="/dashboard/settings?tab=account"
+                  className="w-full cursor-pointer"
+                >
                   <BadgeCheck className="mr-2 h-4 w-4" />
                   Account Settings
-                 </Link>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                 <Link href="/dashboard/billing" className="w-full cursor-pointer">
+                <Link
+                  href="/dashboard/billing"
+                  className="w-full cursor-pointer"
+                >
                   <CreditCard className="mr-2 h-4 w-4" />
                   Billing
-                 </Link>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                 <Link href="/dashboard/settings?tab=notifications" className="w-full cursor-pointer">
+                <Link
+                  href="/dashboard/settings?tab=notifications"
+                  className="w-full cursor-pointer"
+                >
                   <Bell className="mr-2 h-4 w-4" />
                   Notification Prefs
-                 </Link>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                 <Link href="/dashboard/settings" className="w-full cursor-pointer">
+                <Link
+                  href="/dashboard/settings"
+                  className="w-full cursor-pointer"
+                >
                   <Settings className="mr-2 h-4 w-4" />
                   General Settings
-                 </Link>
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

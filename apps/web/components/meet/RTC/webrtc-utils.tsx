@@ -8,10 +8,10 @@ export function ensureRemoteStream(
   remoteVideoRef: React.RefObject<HTMLVideoElement | null>,
   remoteAudioRef: React.RefObject<HTMLAudioElement | null>,
   remoteScreenShareRef: React.RefObject<HTMLVideoElement | null>,
-  peerScreenShareOn: boolean
+  peerScreenShareOn: boolean,
 ) {
   // console.log("🔄 ensureRemoteStream called");
-  
+
   if (!remoteStreamRef.current) {
     // console.log("📺 Creating new remote MediaStream");
     remoteStreamRef.current = new MediaStream();
@@ -56,7 +56,9 @@ export function ensureRemoteStream(
   }
 }
 
-export function detachLocalPreview(localVideoRef: React.RefObject<HTMLVideoElement | null>) {
+export function detachLocalPreview(
+  localVideoRef: React.RefObject<HTMLVideoElement | null>,
+) {
   try {
     const localStream = localVideoRef.current?.srcObject as MediaStream | null;
     if (localStream) {
@@ -72,7 +74,7 @@ export function detachLocalPreview(localVideoRef: React.RefObject<HTMLVideoEleme
   } catch (err) {
     // console.error("Error in detachLocalPreview:", err);
   }
-  
+
   if (localVideoRef.current) {
     try {
       localVideoRef.current.pause();
@@ -84,7 +86,7 @@ export function detachLocalPreview(localVideoRef: React.RefObject<HTMLVideoEleme
 export function stopProvidedTracks(
   localVideoTrack: MediaStreamTrack | null,
   localAudioTrack: MediaStreamTrack | null,
-  currentVideoTrackRef: React.RefObject<MediaStreamTrack | null>
+  currentVideoTrackRef: React.RefObject<MediaStreamTrack | null>,
 ) {
   try {
     if (localVideoTrack) {
@@ -94,7 +96,7 @@ export function stopProvidedTracks(
   } catch (err) {
     // console.error("Error stopping local video track:", err);
   }
-  
+
   try {
     if (localAudioTrack) {
       localAudioTrack.stop();
@@ -102,7 +104,7 @@ export function stopProvidedTracks(
   } catch (err) {
     // console.error("Error stopping local audio track:", err);
   }
-  
+
   try {
     const currentTrack = currentVideoTrackRef.current;
     if (currentTrack) {
@@ -134,10 +136,10 @@ export function teardownPeers(
     setPeerScreenShareOn: (value: boolean) => void;
     setLobby: (value: boolean) => void;
     setStatus: (value: string) => void;
-  }
+  },
 ) {
   // console.log("Tearing down peers, reason:", reason);
-  
+
   // Clean up peer connections
   try {
     if (sendingPcRef.current) {
@@ -167,7 +169,7 @@ export function teardownPeers(
   } catch (err) {
     // console.error("Error in peer connection cleanup:", err);
   }
-  
+
   sendingPcRef.current = null;
   receivingPcRef.current = null;
 
@@ -187,9 +189,9 @@ export function teardownPeers(
       // console.error("Error stopping remote tracks:", err);
     }
   }
-  
+
   remoteStreamRef.current = new MediaStream();
-  
+
   // Clear video elements
   if (remoteVideoRef.current) {
     remoteVideoRef.current.srcObject = null;
@@ -215,7 +217,9 @@ export function teardownPeers(
 
   // Clean up screenshare streams
   if (localScreenShareStreamRef.current) {
-    localScreenShareStreamRef.current.getTracks().forEach((t: MediaStreamTrack) => t.stop());
+    localScreenShareStreamRef.current
+      .getTracks()
+      .forEach((t: MediaStreamTrack) => t.stop());
     localScreenShareStreamRef.current = null;
   }
   if (currentScreenShareTrackRef.current) {
@@ -245,7 +249,7 @@ export async function toggleCameraTrack(
   receivingPcRef: React.RefObject<RTCPeerConnection | null>,
   roomId: string | null,
   socketRef: React.RefObject<any>,
-  localVideoTrack: MediaStreamTrack | null
+  localVideoTrack: MediaStreamTrack | null,
 ) {
   const turningOn = !camOn;
   setCamOn(turningOn);
@@ -256,14 +260,18 @@ export async function toggleCameraTrack(
     if (turningOn) {
       let track = currentVideoTrackRef.current;
       if (!track || track.readyState === "ended") {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
         track = stream.getVideoTracks()[0] || null;
         currentVideoTrackRef.current = track;
       }
 
       if (localVideoRef.current) {
-        const ms = (localVideoRef.current.srcObject as MediaStream) || new MediaStream();
-        if (!localVideoRef.current.srcObject) localVideoRef.current.srcObject = ms;
+        const ms =
+          (localVideoRef.current.srcObject as MediaStream) || new MediaStream();
+        if (!localVideoRef.current.srcObject)
+          localVideoRef.current.srcObject = ms;
         ms.getVideoTracks().forEach((t) => ms.removeTrack(t));
         if (track) ms.addTrack(track);
         await localVideoRef.current.play().catch(() => {});
@@ -277,14 +285,14 @@ export async function toggleCameraTrack(
           videoSenderRef.current = sender;
         }
         // console.log("Added new video track to existing connection");
-        
+
         if (sendingPcRef.current === pc) {
           const offer = await pc.createOffer();
           await pc.setLocalDescription(offer);
-          socketRef.current?.emit("renegotiate-offer", { 
-            roomId, 
-            sdp: offer, 
-            role: "caller" 
+          socketRef.current?.emit("renegotiate-offer", {
+            roomId,
+            sdp: offer,
+            role: "caller",
           });
           // console.log("📤 Sent renegotiation offer for camera turn on");
         }
@@ -317,7 +325,7 @@ export async function toggleCameraTrack(
           }
         }
       }
-      
+
       if (localVideoTrack) {
         try {
           localVideoTrack.stop();
@@ -327,7 +335,7 @@ export async function toggleCameraTrack(
   } catch (e: any) {
     // console.error("toggleCam error", e);
     toast.error("Camera Error", {
-      description: e?.message || "Failed to toggle camera"
+      description: e?.message || "Failed to toggle camera",
     });
   }
 }

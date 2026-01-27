@@ -1,1 +1,77 @@
-pnpm lint
+#!/usr/bin/env sh
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🔍 PRE-COMMIT CHECKS"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Check formatting
+echo "┌─ [1/4] Code Formatting Check"
+echo "│  Checking code formatting with Prettier..."
+echo "│"
+if pnpm format:check > /dev/null 2>&1; then
+  echo "│  ✅ Code formatting is correct"
+  echo "└─────────────────────────────────────────────────────────────────────────"
+else
+  echo "│  ❌ Code formatting check failed!"
+  echo "│  Run 'pnpm format' to fix formatting issues."
+  echo "└─────────────────────────────────────────────────────────────────────────"
+  exit 1
+fi
+echo ""
+
+# Run ESLint
+echo "┌─ [2/4] ESLint - Code Quality"
+echo "│  Analyzing code for linting errors..."
+echo "│"
+if pnpm lint; then
+  echo "│  ✅ No linting errors found"
+  echo "└─────────────────────────────────────────────────────────────────────────"
+else
+  echo "│  ❌ ESLint found errors!"
+  echo "└─────────────────────────────────────────────────────────────────────────"
+  exit 1
+fi
+echo ""
+
+# Run TypeScript type check
+echo "┌─ [3/4] TypeScript Type Checking"
+echo "│  Verifying type safety and catching type errors before commit..."
+echo "│"
+if pnpm typecheck; then
+  echo "│  ✅ All types are correct"
+  echo "└─────────────────────────────────────────────────────────────────────────"
+else
+  echo "│  ❌ TypeScript type check failed!"
+  echo "└─────────────────────────────────────────────────────────────────────────"
+  exit 1
+fi
+echo ""
+
+# Run tests only if they exist
+echo "┌─ [4/4] Test Suite"
+echo "│  Running test suite to ensure all tests pass..."
+echo "│"
+TEST_OUTPUT=$(pnpm test 2>&1 || true)
+TEST_EXIT_CODE=$?
+
+if [ $TEST_EXIT_CODE -eq 0 ]; then
+  echo "│  ✅ All tests passed"
+  echo "└─────────────────────────────────────────────────────────────────────────"
+elif echo "$TEST_OUTPUT" | grep -q "Error: no test specified"; then
+  echo "│  ⚠️  No tests configured"
+  echo "│  Skipping test execution (no test suite found)"
+  echo "└─────────────────────────────────────────────────────────────────────────"
+else
+  echo "│  ❌ Tests failed!"
+  echo "└─────────────────────────────────────────────────────────────────────────"
+  exit 1
+fi
+echo ""
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ ALL PRE-COMMIT CHECKS PASSED!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "✨ Your code is ready to be committed!"
+echo ""

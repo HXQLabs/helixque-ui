@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -70,7 +70,7 @@ const data = {
     {
       title: "AI Assistant",
       url: "/dashboard/ai-assistant",
-      icon: Bot, 
+      icon: Bot,
     },
     {
       title: "Join as a Mentor",
@@ -86,11 +86,6 @@ const data = {
   ],
   community: [
     {
-      title: "Leaderboard",
-      url: "/dashboard/leaderboard",
-      icon: Trophy,
-    },
-    {
       title: "Events",
       url: "/dashboard/events",
       icon: Zap, // Using Zap for now, potentially generic
@@ -100,7 +95,7 @@ const data = {
       url: "/dashboard/community",
       icon: MessageCircle,
     },
-     {
+    {
       title: "Notifications",
       url: "/dashboard/notifications",
       icon: Bell,
@@ -109,44 +104,40 @@ const data = {
   ],
   socials: [
     {
-      title: "Friends",
-      url: "/dashboard/friends",
+      title: "Socials",
+      url: "/dashboard/socials",
       icon: Users,
       badge: 0,
     },
     {
       title: "Chats",
-      url: "/dashboard/chats",
+      url: "/dashboard/socials?tab=friends", // Reuse same page but maybe focus chats?
       icon: MessageCircle,
       badge: 3,
     },
   ],
   resources: [
-     {
-        title: "Saved Items",
-        url: "/dashboard/saved",
-        icon: Bookmark,
-     },
-     {
-        title: "Analytics",
-        url: "/dashboard/analytics",
-        icon: TrendingUp,
-     },
-     {
-        title: "Blogs",
-        url: "/dashboard/blogs",
-        icon: BookOpen,
-     },
-     {
-        title: "Changelog",
-        url: "/dashboard/changelog",
-        icon: Settings2, // Generic icon
-     },
-     {
-        title: "Help Center",
-        url: "/dashboard/help",
-        icon: Heart,
-     },
+    {
+      title: "Saved Items",
+      url: "/dashboard/saved",
+      icon: Bookmark,
+    },
+    {
+      title: "Analytics",
+      url: "/dashboard/analytics",
+      icon: TrendingUp,
+    },
+    {
+      title: "Blogs",
+      url: "/dashboard/blogs",
+      icon: BookOpen,
+    },
+
+    {
+      title: "Help Center",
+      url: "/dashboard/help",
+      icon: Heart,
+    },
   ],
   proFeatures: [
     {
@@ -163,8 +154,30 @@ import { useSession } from "next-auth/react";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session, status } = useSession();
-  
-  console.log("AppSidebar Session:", { status, user: session?.user });
+  // Polling removed for performance optimization as per user request
+  // Socials and Notifications features are currently in 'maintenance mode'
+
+  // Cleaned up data usage without dynamic badges
+  const refinedSocials = data.socials.filter((item) => item.title !== "Chats");
+  const [unreadCount, setUnreadCount] = useState(0);
+  const backendUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch(`${backendUrl}/notifications/unread?userId=${session.user.id}`)
+        .then((res) => res.json())
+        .then((data) => setUnreadCount(data.count || 0))
+        .catch(() => {});
+    }
+  }, [session?.user?.id]);
+
+  const refinedCommunity = data.community.map((item) => {
+    if (item.title === "Notifications") {
+      return { ...item, badge: unreadCount > 0 ? unreadCount : undefined };
+    }
+    return item;
+  });
 
   const user = {
     name: session?.user?.name || "User",
@@ -180,7 +193,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center">
-                  <Image src="/logo.svg" alt="Helixque" width={24} height={24} className="size-8" />
+                  <Image
+                    src="/logo.svg"
+                    alt="Helixque"
+                    width={24}
+                    height={24}
+                    className="size-8"
+                  />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">Helixque</span>
@@ -193,42 +212,45 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavConnect items={data.connect} />
-        
+
         <SidebarGroup id="sidebar-community">
-           <SidebarGroupLabel>Community</SidebarGroupLabel>
-           <SidebarMenu>
-              {data.community.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                     <SidebarMenuButton asChild tooltip={item.title}>
-                        <Link href={item.url}>
-                           <item.icon />
-                           <span>{item.title}</span>
-                           {/* Badge logic if needed, data.community has badge for Notifications */}
-                           {/* @ts-ignore - badge exists on some items */}
-                           {item.badge ? <span className="ml-auto flex size-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-medium text-primary shadow-xs">{item.badge}</span> : null}
-                        </Link>
-                     </SidebarMenuButton>
-                  </SidebarMenuItem>
-               ))}
-           </SidebarMenu>
+          <SidebarGroupLabel>Community</SidebarGroupLabel>
+          <SidebarMenu>
+            {refinedCommunity.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild tooltip={item.title}>
+                  <Link href={item.url}>
+                    <item.icon />
+                    <span>{item.title}</span>
+                    {/* @ts-ignore */}
+                    {item.badge ? (
+                      <span className="ml-auto flex size-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-medium text-primary shadow-xs">
+                        {item.badge}
+                      </span>
+                    ) : null}
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
         </SidebarGroup>
 
-        <NavSocials items={data.socials} />
+        <NavSocials items={refinedSocials} />
 
         <SidebarGroup id="sidebar-resources">
-           <SidebarGroupLabel>Resources</SidebarGroupLabel>
-           <SidebarMenu>
-              {data.resources.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                     <SidebarMenuButton asChild tooltip={item.title}>
-                        <Link href={item.url}>
-                           <item.icon />
-                           <span>{item.title}</span>
-                        </Link>
-                     </SidebarMenuButton>
-                  </SidebarMenuItem>
-               ))}
-           </SidebarMenu>
+          <SidebarGroupLabel>Resources</SidebarGroupLabel>
+          <SidebarMenu>
+            {data.resources.map((item) => (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild tooltip={item.title}>
+                  <Link href={item.url}>
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenu>
         </SidebarGroup>
 
         <NavProFeatures features={data.proFeatures} />

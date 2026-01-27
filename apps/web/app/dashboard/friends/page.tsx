@@ -339,7 +339,11 @@ function FriendCard({ friend, type, onAction }: FriendCardProps) {
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <div className="relative flex-shrink-0">
           <Avatar className="h-11 w-11 ring-1 ring-border/50 transition-all group-hover:ring-primary/30">
-            <AvatarImage src={friend.avatar} alt={friend.name} className="object-cover" />
+            <AvatarImage
+              src={friend.avatar}
+              alt={friend.name}
+              className="object-cover"
+            />
             <AvatarFallback className="text-sm font-medium bg-gradient-to-br from-primary/10 to-primary/5">
               {friend.name
                 .split(" ")
@@ -353,7 +357,9 @@ function FriendCard({ friend, type, onAction }: FriendCardProps) {
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-sm leading-tight text-foreground/90">{friend.name}</h3>
+          <h3 className="font-semibold text-sm leading-tight text-foreground/90">
+            {friend.name}
+          </h3>
           <p className="text-xs text-muted-foreground/80 truncate">
             {friend.displayName}
           </p>
@@ -452,7 +458,9 @@ export default function FriendsPage() {
         {/* Header */}
         <div className="border-b border-border/40 p-3 md:p-5 space-y-3 md:space-y-4 flex-shrink-0 bg-gradient-to-b from-background/80 to-transparent">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Friends</h1>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+              Friends
+            </h1>
             <p className="text-muted-foreground mt-1 text-sm">
               Connect with friends and manage your network
             </p>
@@ -472,11 +480,13 @@ export default function FriendsPage() {
               >
                 <span className="flex items-center justify-center gap-2">
                   {tab.label}
-                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                    activeTab === tab.id
-                      ? "bg-primary/10 text-primary"
-                      : "bg-muted text-muted-foreground"
-                  }`}>
+                  <span
+                    className={`text-xs px-1.5 py-0.5 rounded-full ${
+                      activeTab === tab.id
+                        ? "bg-primary/10 text-primary"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
                     {tab.count}
                   </span>
                 </span>
@@ -548,7 +558,7 @@ export default function FriendsPage() {
         {!isLoading && filteredData.length > 0 && (
           <div className="border-t border-border/40 p-3 md:p-4 flex items-center flex-shrink-0 bg-gradient-to-t from-background/80 to-transparent">
             <div className="flex-1"></div>
-            
+
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -584,8 +594,8 @@ export default function FriendsPage() {
                   (currentPage - 1) * itemsPerPage + 1,
                   filteredData.length,
                 )}{" "}
-                to {Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}
-                {filteredData.length}
+                to {Math.min(currentPage * itemsPerPage, filteredData.length)}{" "}
+                of {filteredData.length}
               </div>
             </div>
           </div>

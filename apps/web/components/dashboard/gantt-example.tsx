@@ -97,7 +97,8 @@ export const GanttExample: React.FC<GanttExampleProps> = ({
     (acc, feature) => {
       const type =
         Object.keys(ganttStatuses).find(
-          (key) => ganttStatuses[key as Meeting["type"]].id === feature.status.id
+          (key) =>
+            ganttStatuses[key as Meeting["type"]].id === feature.status.id,
         ) || "scheduled";
       if (!acc[type]) {
         acc[type] = [];
@@ -105,13 +106,13 @@ export const GanttExample: React.FC<GanttExampleProps> = ({
       acc[type].push(feature);
       return acc;
     },
-    {} as Record<string, GanttFeature[]>
+    {} as Record<string, GanttFeature[]>,
   );
 
   const sortedGroupedMeetings = Object.fromEntries(
     Object.entries(groupedByType).sort(([nameA], [nameB]) =>
-      nameA.localeCompare(nameB)
-    )
+      nameA.localeCompare(nameB),
+    ),
   );
 
   const handleViewMeeting = (id: string) => {
@@ -223,10 +224,7 @@ export const GanttExample: React.FC<GanttExampleProps> = ({
                         className="flex items-center gap-2"
                         onClick={() => handleCopyLink(meeting.id)}
                       >
-                        <LinkIcon
-                          className="text-muted-foreground"
-                          size={16}
-                        />
+                        <LinkIcon className="text-muted-foreground" size={16} />
                         Copy link
                       </ContextMenuItem>
                       <ContextMenuItem

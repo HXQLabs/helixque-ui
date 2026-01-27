@@ -18,7 +18,7 @@ import {
   toggleCameraTrack,
 } from "./webrtc-utils";
 
-const URL = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:5001";
+const URL = process.env.NEXT_PUBLIC_RTC_BACKEND_URI || "http://localhost:5001";
 
 type RoomProps = {
   name: string;

@@ -9,9 +9,9 @@ export default function SignupPage() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center md:justify-start">
           <Link href="/" className="flex items-center gap-2 font-medium">
-             <div className="bg-primary/10 text-primary flex size-6 items-center justify-center rounded-md">
-               <img src="/logo.svg" alt="Helixque" className="size-4" />
-             </div>
+            <div className="bg-primary/10 text-primary flex size-6 items-center justify-center rounded-md">
+              <img src="/logo.svg" alt="Helixque" className="size-4" />
+            </div>
             Helixque
           </Link>
         </div>
@@ -32,7 +32,10 @@ export default function SignupPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <div className="absolute bottom-10 left-10 right-10 text-white">
           <h2 className="text-3xl font-bold mb-2">Peer to Peer Meet</h2>
-          <p className="text-lg opacity-90">Unlock your potential by connecting with top-tier professionals and mentors.</p>
+          <p className="text-lg opacity-90">
+            Unlock your potential by connecting with top-tier professionals and
+            mentors.
+          </p>
         </div>
       </div>
     </div>

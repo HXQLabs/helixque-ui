@@ -30,17 +30,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar";
 
 export default function ProfilePage() {
   const [isEditingAbout, setIsEditingAbout] = React.useState(false);
   const [isEditingBasicInfo, setIsEditingBasicInfo] = React.useState(false);
-  const [isEditingAvailability, setIsEditingAvailability] = React.useState(false);
-  const [avatarUrl, setAvatarUrl] = React.useState("https://api.dicebear.com/7.x/avataaars/svg?seed=Alex");
-  const [coverImageUrl, setCoverImageUrl] = React.useState("https://images.unsplash.com/photo-1557683316-973673baf926?w=1200&h=400&fit=crop");
-  
+  const [isEditingAvailability, setIsEditingAvailability] =
+    React.useState(false);
+  const [avatarUrl, setAvatarUrl] = React.useState(
+    "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
+  );
+  const [coverImageUrl, setCoverImageUrl] = React.useState(
+    "https://images.unsplash.com/photo-1557683316-973673baf926?w=1200&h=400&fit=crop",
+  );
+
   const [about, setAbout] = React.useState(
-    "Passionate frontend engineer with over 5 years of experience building scalable web applications. I love working with React, TypeScript, and modern CSS tools. Currently focused on building accessible and performant user interfaces. Open to mentorship opportunities and technical discussions."
+    "Passionate frontend engineer with over 5 years of experience building scalable web applications. I love working with React, TypeScript, and modern CSS tools. Currently focused on building accessible and performant user interfaces. Open to mentorship opportunities and technical discussions.",
   );
 
   const [basicInfo, setBasicInfo] = React.useState({
@@ -95,7 +104,8 @@ export default function ProfilePage() {
       company: "StartupXYZ",
       role: "Frontend Developer",
       period: "2019 - 2021",
-      description: "Built responsive web applications using React and TypeScript",
+      description:
+        "Built responsive web applications using React and TypeScript",
     },
     {
       company: "WebDev Agency",
@@ -215,7 +225,9 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-2xl font-bold tracking-tight">{basicInfo.name}</h1>
+                  <h1 className="text-2xl font-bold tracking-tight">
+                    {basicInfo.name}
+                  </h1>
                   <BadgeCheck className="h-5 w-5 text-blue-500 shrink-0" />
                 </div>
                 <p className="text-muted-foreground">{basicInfo.title}</p>
@@ -246,7 +258,10 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <a href="#" className="text-primary hover:underline truncate cursor-pointer">
+                  <a
+                    href="#"
+                    className="text-primary hover:underline truncate cursor-pointer"
+                  >
                     {basicInfo.website}
                   </a>
                 </div>
@@ -266,7 +281,9 @@ export default function ProfilePage() {
                   <Input
                     id="name"
                     value={basicInfo.name}
-                    onChange={(e) => setBasicInfo({ ...basicInfo, name: e.target.value })}
+                    onChange={(e) =>
+                      setBasicInfo({ ...basicInfo, name: e.target.value })
+                    }
                     className="cursor-text"
                   />
                 </div>
@@ -275,7 +292,9 @@ export default function ProfilePage() {
                   <Input
                     id="title"
                     value={basicInfo.title}
-                    onChange={(e) => setBasicInfo({ ...basicInfo, title: e.target.value })}
+                    onChange={(e) =>
+                      setBasicInfo({ ...basicInfo, title: e.target.value })
+                    }
                     className="cursor-text"
                   />
                 </div>
@@ -284,7 +303,9 @@ export default function ProfilePage() {
                   <Input
                     id="company"
                     value={basicInfo.company}
-                    onChange={(e) => setBasicInfo({ ...basicInfo, company: e.target.value })}
+                    onChange={(e) =>
+                      setBasicInfo({ ...basicInfo, company: e.target.value })
+                    }
                     className="cursor-text"
                   />
                 </div>
@@ -293,7 +314,9 @@ export default function ProfilePage() {
                   <Input
                     id="location"
                     value={basicInfo.location}
-                    onChange={(e) => setBasicInfo({ ...basicInfo, location: e.target.value })}
+                    onChange={(e) =>
+                      setBasicInfo({ ...basicInfo, location: e.target.value })
+                    }
                     className="cursor-text"
                   />
                 </div>
@@ -302,7 +325,9 @@ export default function ProfilePage() {
                   <Input
                     id="website"
                     value={basicInfo.website}
-                    onChange={(e) => setBasicInfo({ ...basicInfo, website: e.target.value })}
+                    onChange={(e) =>
+                      setBasicInfo({ ...basicInfo, website: e.target.value })
+                    }
                     className="cursor-text"
                   />
                 </div>
@@ -312,7 +337,9 @@ export default function ProfilePage() {
                     id="email"
                     type="email"
                     value={basicInfo.email}
-                    onChange={(e) => setBasicInfo({ ...basicInfo, email: e.target.value })}
+                    onChange={(e) =>
+                      setBasicInfo({ ...basicInfo, email: e.target.value })
+                    }
                     className="cursor-text"
                   />
                 </div>
@@ -325,7 +352,11 @@ export default function ProfilePage() {
                   >
                     Cancel
                   </Button>
-                  <Button size="sm" onClick={handleSaveBasicInfo} className="cursor-pointer">
+                  <Button
+                    size="sm"
+                    onClick={handleSaveBasicInfo}
+                    className="cursor-pointer"
+                  >
                     <Check className="h-4 w-4 mr-2" />
                     Save
                   </Button>
@@ -360,12 +391,17 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Working Hours</span>
-                  <span className="font-medium">{availability.workingHours}</span>
+                  <span className="font-medium">
+                    {availability.workingHours}
+                  </span>
                 </div>
                 <Separator />
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground">Status</span>
-                  <Badge variant="default" className="bg-green-500/10 text-green-500 hover:bg-green-500/20 cursor-default">
+                  <Badge
+                    variant="default"
+                    className="bg-green-500/10 text-green-500 hover:bg-green-500/20 cursor-default"
+                  >
                     {availability.status}
                   </Badge>
                 </div>
@@ -377,7 +413,12 @@ export default function ProfilePage() {
                   <Input
                     id="timezone"
                     value={availability.timezone}
-                    onChange={(e) => setAvailability({ ...availability, timezone: e.target.value })}
+                    onChange={(e) =>
+                      setAvailability({
+                        ...availability,
+                        timezone: e.target.value,
+                      })
+                    }
                     className="cursor-text"
                   />
                 </div>
@@ -386,7 +427,12 @@ export default function ProfilePage() {
                   <Input
                     id="hours"
                     value={availability.workingHours}
-                    onChange={(e) => setAvailability({ ...availability, workingHours: e.target.value })}
+                    onChange={(e) =>
+                      setAvailability({
+                        ...availability,
+                        workingHours: e.target.value,
+                      })
+                    }
                     className="cursor-text"
                   />
                 </div>
@@ -395,7 +441,12 @@ export default function ProfilePage() {
                   <Input
                     id="status"
                     value={availability.status}
-                    onChange={(e) => setAvailability({ ...availability, status: e.target.value })}
+                    onChange={(e) =>
+                      setAvailability({
+                        ...availability,
+                        status: e.target.value,
+                      })
+                    }
                     className="cursor-text"
                   />
                 </div>
@@ -408,7 +459,11 @@ export default function ProfilePage() {
                   >
                     Cancel
                   </Button>
-                  <Button size="sm" onClick={handleSaveAvailability} className="cursor-pointer">
+                  <Button
+                    size="sm"
+                    onClick={handleSaveAvailability}
+                    className="cursor-pointer"
+                  >
                     <Check className="h-4 w-4 mr-2" />
                     Save
                   </Button>
@@ -423,7 +478,11 @@ export default function ProfilePage() {
               <h3 className="font-semibold">Skills & Expertise</h3>
               <Dialog open={skillDialogOpen} onOpenChange={setSkillDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer transition-all duration-200 hover:bg-muted">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 cursor-pointer transition-all duration-200 hover:bg-muted"
+                  >
                     <Plus className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
@@ -450,7 +509,10 @@ export default function ProfilePage() {
                         className="cursor-text"
                       />
                     </div>
-                    <Button className="w-full cursor-pointer" onClick={handleAddSkill}>
+                    <Button
+                      className="w-full cursor-pointer"
+                      onClick={handleAddSkill}
+                    >
                       Add Skill
                     </Button>
                   </div>
@@ -511,14 +573,20 @@ export default function ProfilePage() {
                   >
                     Cancel
                   </Button>
-                  <Button size="sm" onClick={handleSaveAbout} className="cursor-pointer">
+                  <Button
+                    size="sm"
+                    onClick={handleSaveAbout}
+                    className="cursor-pointer"
+                  >
                     <Check className="h-4 w-4 mr-2" />
                     Save Changes
                   </Button>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground leading-relaxed transition-opacity duration-300">{about}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed transition-opacity duration-300">
+                {about}
+              </p>
             )}
           </div>
 
@@ -537,9 +605,15 @@ export default function ProfilePage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <h4 className="font-semibold text-sm">{exp.role}</h4>
-                      <p className="text-sm text-muted-foreground mt-0.5">{exp.company}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{exp.period}</p>
-                      <p className="text-sm text-muted-foreground mt-2">{exp.description}</p>
+                      <p className="text-sm text-muted-foreground mt-0.5">
+                        {exp.company}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {exp.period}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        {exp.description}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -560,7 +634,9 @@ export default function ProfilePage() {
                   className="bg-muted/30 rounded-xl p-4 text-center hover:bg-muted/50 transition-all duration-300 border border-border/50 cursor-default hover:scale-105 hover:shadow-md"
                 >
                   <div className="text-3xl mb-2">{achievement.icon}</div>
-                  <p className="text-sm font-semibold mb-1">{achievement.title}</p>
+                  <p className="text-sm font-semibold mb-1">
+                    {achievement.title}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {achievement.description}
                   </p>

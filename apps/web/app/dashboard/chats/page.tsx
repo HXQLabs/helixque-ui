@@ -2,7 +2,15 @@
 
 import * as React from "react";
 import { useEffect, useRef, useCallback, useState, useMemo } from "react";
-import { MessageCircle, Search, Send, Loader2, Paperclip, Smile, X } from "lucide-react";
+import {
+  MessageCircle,
+  Search,
+  Send,
+  Loader2,
+  Paperclip,
+  Smile,
+  X,
+} from "lucide-react";
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import {
   Avatar,
@@ -45,12 +53,38 @@ interface Message {
 // Generate mock chats outside component - only once
 const generateMockChats = (): Chat[] => {
   const names = [
-    "Sarah", "John", "Emma", "Michael", "Jessica", "David", "Alex", 
-    "Lisa", "Mark", "Sophie", "James", "Rachel", "Daniel", "Nina", "Chris",
+    "Sarah",
+    "John",
+    "Emma",
+    "Michael",
+    "Jessica",
+    "David",
+    "Alex",
+    "Lisa",
+    "Mark",
+    "Sophie",
+    "James",
+    "Rachel",
+    "Daniel",
+    "Nina",
+    "Chris",
   ];
   const surnames = [
-    "Anderson", "Doe", "Wilson", "Chen", "Brown", "Martinez", "Thompson",
-    "Wong", "Johnson", "Laurent", "Smith", "Davis", "Miller", "Taylor", "White",
+    "Anderson",
+    "Doe",
+    "Wilson",
+    "Chen",
+    "Brown",
+    "Martinez",
+    "Thompson",
+    "Wong",
+    "Johnson",
+    "Laurent",
+    "Smith",
+    "Davis",
+    "Miller",
+    "Taylor",
+    "White",
   ];
   const lastMessages = [
     "That sounds great! When do you want to meet?",
@@ -62,19 +96,27 @@ const generateMockChats = (): Chat[] => {
     "Can't wait to hear from you",
     "Let me know what you think",
   ];
-  const timestamps = ["2 min ago", "1 hour ago", "3 hours ago", "Yesterday", "2 days ago"];
+  const timestamps = [
+    "2 min ago",
+    "1 hour ago",
+    "3 hours ago",
+    "Yesterday",
+    "2 days ago",
+  ];
 
   return Array.from({ length: 20 }, (_, i) => {
     const name = `${names[Math.floor(Math.random() * names.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
     const hasUnread = Math.random() > 0.7;
-    
+
     return {
       id: i + 1,
       name,
       displayName: `@user${i + 1}`,
       avatar: `https://github.com/shadcn.png`,
-      lastMessage: lastMessages[Math.floor(Math.random() * lastMessages.length)] || "",
-      timestamp: timestamps[Math.floor(Math.random() * timestamps.length)] || "Now",
+      lastMessage:
+        lastMessages[Math.floor(Math.random() * lastMessages.length)] || "",
+      timestamp:
+        timestamps[Math.floor(Math.random() * timestamps.length)] || "Now",
       unreadCount: hasUnread ? Math.floor(Math.random() * 5) + 1 : undefined,
       messages: generateMockMessages(name),
     };
@@ -130,40 +172,46 @@ const ChatItemSkeleton = React.memo(() => (
 ChatItemSkeleton.displayName = "ChatItemSkeleton";
 
 // Reusable Avatar Component with online status
-const ChatAvatar = React.memo(({ 
-  avatar, 
-  name, 
-  size = "default",
-  showOnline = false 
-}: { 
-  avatar: string; 
-  name: string; 
-  size?: "small" | "default";
-  showOnline?: boolean;
-}) => {
-  const sizeClasses = size === "small" ? "h-8 w-8" : "h-11 w-11";
-  const onlineIndicatorSize = size === "small" ? "h-2.5 w-2.5" : "h-3 w-3";
-  
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
+const ChatAvatar = React.memo(
+  ({
+    avatar,
+    name,
+    size = "default",
+    showOnline = false,
+  }: {
+    avatar: string;
+    name: string;
+    size?: "small" | "default";
+    showOnline?: boolean;
+  }) => {
+    const sizeClasses = size === "small" ? "h-8 w-8" : "h-11 w-11";
+    const onlineIndicatorSize = size === "small" ? "h-2.5 w-2.5" : "h-3 w-3";
 
-  return (
-    <div className="relative flex-shrink-0">
-      <Avatar className={`${sizeClasses} ring-1 ring-border/50 transition-all group-hover:ring-primary/30`}>
-        <AvatarImage src={avatar} alt={name} className="object-cover" />
-        <AvatarFallback className="text-sm font-medium bg-gradient-to-br from-primary/10 to-primary/5">
-          {initials}
-        </AvatarFallback>
-      </Avatar>
-      {showOnline && (
-        <div className={`absolute -bottom-0.5 -right-0.5 ${onlineIndicatorSize} rounded-full bg-emerald-500 ring-2 ring-background`} />
-      )}
-    </div>
-  );
-});
+    const initials = name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+
+    return (
+      <div className="relative flex-shrink-0">
+        <Avatar
+          className={`${sizeClasses} ring-1 ring-border/50 transition-all group-hover:ring-primary/30`}
+        >
+          <AvatarImage src={avatar} alt={name} className="object-cover" />
+          <AvatarFallback className="text-sm font-medium bg-gradient-to-br from-primary/10 to-primary/5">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+        {showOnline && (
+          <div
+            className={`absolute -bottom-0.5 -right-0.5 ${onlineIndicatorSize} rounded-full bg-emerald-500 ring-2 ring-background`}
+          />
+        )}
+      </div>
+    );
+  },
+);
 ChatAvatar.displayName = "ChatAvatar";
 
 // Loading indicator component
@@ -178,30 +226,34 @@ const LoadingIndicator = React.memo(({ text }: { text: string }) => (
 LoadingIndicator.displayName = "LoadingIndicator";
 
 // Empty state component
-const EmptyState = React.memo(({ 
-  icon: Icon, 
-  title, 
-  description 
-}: { 
-  icon: React.ElementType; 
-  title: string; 
-  description: string;
-}) => (
-  <div className="flex-1 flex items-center justify-center animate-in fade-in duration-500">
-    <div className="text-center space-y-4 max-w-sm px-6">
-      <div className="relative inline-flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-primary/5 to-transparent blur-3xl rounded-full scale-150" />
-        <div className="relative bg-muted/50 backdrop-blur-sm p-6 rounded-2xl ring-1 ring-border/40">
-          <Icon className="h-12 w-12 text-muted-foreground/40" />
+const EmptyState = React.memo(
+  ({
+    icon: Icon,
+    title,
+    description,
+  }: {
+    icon: React.ElementType;
+    title: string;
+    description: string;
+  }) => (
+    <div className="flex-1 flex items-center justify-center animate-in fade-in duration-500">
+      <div className="text-center space-y-4 max-w-sm px-6">
+        <div className="relative inline-flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-primary/5 to-transparent blur-3xl rounded-full scale-150" />
+          <div className="relative bg-muted/50 backdrop-blur-sm p-6 rounded-2xl ring-1 ring-border/40">
+            <Icon className="h-12 w-12 text-muted-foreground/40" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <h3 className="text-base font-semibold tracking-tight">{title}</h3>
+          <p className="text-sm text-muted-foreground/70 leading-relaxed">
+            {description}
+          </p>
         </div>
       </div>
-      <div className="space-y-2">
-        <h3 className="text-base font-semibold tracking-tight">{title}</h3>
-        <p className="text-sm text-muted-foreground/70 leading-relaxed">{description}</p>
-      </div>
     </div>
-  </div>
-));
+  ),
+);
 EmptyState.displayName = "EmptyState";
 
 export default function ChatsPage() {
@@ -223,7 +275,7 @@ export default function ChatsPage() {
   const [messageInput, setMessageInput] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  
+
   // Refs
   const chatListRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -238,7 +290,7 @@ export default function ChatsPage() {
       setDisplayedChats(MOCK_CHATS.slice(0, INITIAL_LOAD_COUNT));
       setInitialLoading(false);
     }, INITIAL_LOAD_DELAY);
-    
+
     return () => clearTimeout(timer);
   }, [setDisplayedChats]);
 
@@ -259,7 +311,10 @@ export default function ChatsPage() {
       setIsLoadingMore(true);
       loadMoreTimerRef.current = setTimeout(() => {
         setDisplayedChats((prev) => {
-          const newCount = Math.min(prev.length + LOAD_MORE_COUNT, MOCK_CHATS.length);
+          const newCount = Math.min(
+            prev.length + LOAD_MORE_COUNT,
+            MOCK_CHATS.length,
+          );
           return MOCK_CHATS.slice(0, newCount);
         });
         setIsLoadingMore(false);
@@ -294,10 +349,13 @@ export default function ChatsPage() {
   }, []);
 
   // Handle file selection
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setSelectedFiles((prev) => [...prev, ...files]);
-  }, []);
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      setSelectedFiles((prev) => [...prev, ...files]);
+    },
+    [],
+  );
 
   // Remove selected file
   const removeFile = useCallback((index: number) => {
@@ -315,12 +373,15 @@ export default function ChatsPage() {
   }, [messageInput, selectedFiles]);
 
   // Handle Enter key to send
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  }, [handleSendMessage]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSendMessage();
+      }
+    },
+    [handleSendMessage],
+  );
 
   // Close emoji picker when clicking outside
   useEffect(() => {
@@ -346,11 +407,11 @@ export default function ChatsPage() {
   const filteredChats = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return displayedChats;
-    
+
     return displayedChats.filter(
       (chat) =>
         chat.name.toLowerCase().includes(query) ||
-        chat.displayName.toLowerCase().includes(query)
+        chat.displayName.toLowerCase().includes(query),
     );
   }, [searchQuery, displayedChats]);
 
@@ -364,7 +425,9 @@ export default function ChatsPage() {
         className={`w-full md:w-[340px] flex flex-col bg-card/50 backdrop-blur-xl overflow-hidden border border-border/40 md:rounded-xl shadow-sm transition-all duration-300 ${selectedChat ? "hidden md:flex" : "flex"}`}
       >
         <div className="border-b border-border/40 p-3 md:p-5 space-y-3 md:space-y-4 flex-shrink-0 bg-gradient-to-b from-background/80 to-transparent">
-          <h2 className="text-lg md:text-xl font-semibold tracking-tight">Messages</h2>
+          <h2 className="text-lg md:text-xl font-semibold tracking-tight">
+            Messages
+          </h2>
           <div className="relative group">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground/70 transition-colors group-hover:text-muted-foreground" />
             <Input
@@ -398,7 +461,9 @@ export default function ChatsPage() {
                 <Search className="h-12 w-12 text-muted-foreground/20" />
                 <div className="absolute inset-0 bg-primary/5 blur-2xl" />
               </div>
-              <p className="text-sm font-medium text-foreground/80">No conversations found</p>
+              <p className="text-sm font-medium text-foreground/80">
+                No conversations found
+              </p>
               <p className="text-xs text-muted-foreground/60 mt-1">
                 Try searching with a different term
               </p>
@@ -420,10 +485,10 @@ export default function ChatsPage() {
                     animationFillMode: "backwards",
                   }}
                 >
-                  <ChatAvatar 
-                    avatar={chat.avatar} 
-                    name={chat.name} 
-                    showOnline 
+                  <ChatAvatar
+                    avatar={chat.avatar}
+                    name={chat.name}
+                    showOnline
                   />
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-medium truncate text-foreground/90 group-hover:text-foreground">
@@ -477,10 +542,10 @@ export default function ChatsPage() {
                   />
                 </svg>
               </button>
-              <ChatAvatar 
-                avatar={selectedChat.avatar} 
-                name={selectedChat.name} 
-                showOnline 
+              <ChatAvatar
+                avatar={selectedChat.avatar}
+                name={selectedChat.name}
+                showOnline
               />
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-base truncate tracking-tight">
@@ -490,13 +555,33 @@ export default function ChatsPage() {
               </div>
               <div className="flex gap-1.5">
                 <button className="p-2 hover:bg-muted/80 rounded-lg transition-all active:scale-95">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
                   </svg>
                 </button>
                 <button className="p-2 hover:bg-muted/80 rounded-lg transition-all active:scale-95">
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    />
                   </svg>
                 </button>
               </div>
@@ -508,7 +593,9 @@ export default function ChatsPage() {
               onScroll={handleMessagesScroll}
               className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-gradient-to-b from-background/30 to-background/60 [scrollbar-width:thin] [scrollbar-color:hsl(var(--muted))_transparent]"
             >
-              {loadingOlderMessages && <LoadingIndicator text="Loading older messages..." />}
+              {loadingOlderMessages && (
+                <LoadingIndicator text="Loading older messages..." />
+              )}
               {selectedChat?.messages.map((message: Message, index: number) => (
                 <div
                   key={message.id}
@@ -529,13 +616,25 @@ export default function ChatsPage() {
                     }`}
                   >
                     <p className="text-sm leading-relaxed">{message.text}</p>
-                    <p className={`text-[10px] mt-1.5 flex items-center gap-1 ${
-                      message.sender === "You" ? "opacity-80 justify-end" : "opacity-60"
-                    }`}>
+                    <p
+                      className={`text-[10px] mt-1.5 flex items-center gap-1 ${
+                        message.sender === "You"
+                          ? "opacity-80 justify-end"
+                          : "opacity-60"
+                      }`}
+                    >
                       {message.timestamp}
                       {message.sender === "You" && (
-                        <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        <svg
+                          className="h-3 w-3"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                       )}
                     </p>
@@ -568,7 +667,7 @@ export default function ChatsPage() {
                   ))}
                 </div>
               )}
-              
+
               {/* Input Area */}
               <div className="flex gap-3">
                 <div className="flex-1 relative" ref={emojiButtonRef}>
@@ -633,7 +732,7 @@ export default function ChatsPage() {
             </div>
           </div>
         ) : (
-          <EmptyState 
+          <EmptyState
             icon={MessageCircle}
             title="No conversation selected"
             description="Choose a conversation from the list to start messaging"

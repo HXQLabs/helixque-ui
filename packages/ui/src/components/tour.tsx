@@ -41,15 +41,12 @@ const OPEN_AUTO_FOCUS = "tour.openAutoFocus";
 const CLOSE_AUTO_FOCUS = "tour.closeAutoFocus";
 const EVENT_OPTIONS = { bubbles: false, cancelable: true };
 
-const SIDE_OPTIONS = ["top", "right", "bottom", "left"] as const;
-const ALIGN_OPTIONS = ["start", "center", "end"] as const;
-
 const DEFAULT_ALIGN_OFFSET = 0;
 const DEFAULT_SIDE_OFFSET = 16;
 const DEFAULT_SPOTLIGHT_PADDING = 4;
 
-type Side = (typeof SIDE_OPTIONS)[number];
-type Align = (typeof ALIGN_OPTIONS)[number];
+type Side = "top" | "right" | "bottom" | "left";
+type Align = "start" | "center" | "end";
 type Direction = "ltr" | "rtl";
 
 interface ScrollOffset {
@@ -163,6 +160,8 @@ function useFocusTrap(
 
     const previouslyFocusedElement =
       document.activeElement as HTMLElement | null;
+    const tourOpen = tourOpenRef.current;
+    const onCloseAutoFocus = onCloseAutoFocusRef.current;
 
     function getTabbableCandidates() {
       if (!container) return [];
@@ -257,16 +256,16 @@ function useFocusTrap(
       document.removeEventListener("focusin", onFocusIn);
       container.removeEventListener("keydown", onKeyDown);
 
-      if (!tourOpenRef.current) {
+      if (!tourOpen) {
         setTimeout(() => {
           const closeAutoFocusEvent = new CustomEvent(
             CLOSE_AUTO_FOCUS,
             EVENT_OPTIONS,
           );
-          if (onCloseAutoFocusRef.current) {
+          if (onCloseAutoFocus) {
             container.addEventListener(
               CLOSE_AUTO_FOCUS,
-              onCloseAutoFocusRef.current as EventListener,
+              onCloseAutoFocus as EventListener,
               { once: true },
             );
           }
@@ -281,10 +280,10 @@ function useFocusTrap(
             }
           }
 
-          if (onCloseAutoFocusRef.current) {
+          if (onCloseAutoFocus) {
             container.removeEventListener(
               CLOSE_AUTO_FOCUS,
-              onCloseAutoFocusRef.current as EventListener,
+              onCloseAutoFocus as EventListener,
             );
           }
         }, 0);
@@ -722,21 +721,20 @@ function TourRoot(props: TourRootProps) {
   );
 }
 
-interface TourRootImplProps
-  extends Omit<
-    TourRootProps,
-    | "open"
-    | "defaultOpen"
-    | "onOpenChange"
-    | "value"
-    | "defaultValue"
-    | "onValueChange"
-    | "onComplete"
-    | "onSkip"
-    | "autoScroll"
-    | "scrollBehavior"
-    | "scrollOffset"
-  > {}
+type TourRootImplProps = Omit<
+  TourRootProps,
+  | "open"
+  | "defaultOpen"
+  | "onOpenChange"
+  | "value"
+  | "defaultValue"
+  | "onValueChange"
+  | "onComplete"
+  | "onSkip"
+  | "autoScroll"
+  | "scrollBehavior"
+  | "scrollOffset"
+>;
 
 function TourRootImpl(props: TourRootImplProps) {
   const {
@@ -854,7 +852,7 @@ function TourRootImpl(props: TourRootImplProps) {
       portal,
       onPortalChange: setPortal,
     }),
-    [portal],
+    [portal, setPortal],
   );
 
   useScrollLock(open && modal);
@@ -1069,7 +1067,15 @@ function TourStep(props: TourStepProps) {
       onArrowChange: setArrow,
       onFooterChange: setFooter,
     }),
-    [arrowX, arrowY, placedSide, placedAlign, cannotCenterArrow],
+    [
+      arrowX,
+      arrowY,
+      placedSide,
+      placedAlign,
+      cannotCenterArrow,
+      setArrow,
+      setFooter,
+    ],
   );
 
   React.useEffect(() => {

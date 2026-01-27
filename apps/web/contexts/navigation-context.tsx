@@ -19,12 +19,12 @@ export function NavigationProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const {
-    activeSubSection,
-    activeSection,
-    setActiveSubSection,
-    setActiveSectionState,
-  } = useHelixque();
+  const activeSubSection = useHelixque((state) => state.activeSubSection);
+  const activeSection = useHelixque((state) => state.activeSection);
+  const setActiveSubSection = useHelixque((state) => state.setActiveSubSection);
+  const setActiveSectionState = useHelixque(
+    (state) => state.setActiveSectionState,
+  );
 
   const setActiveSection = React.useCallback(
     (section: string, subSection?: string | null) => {
@@ -36,7 +36,12 @@ export function NavigationProvider({
 
   return (
     <NavigationContext.Provider
-      value={{ activeSection, activeSubSection, setActiveSection, setActiveSubSection }}
+      value={{
+        activeSection,
+        activeSubSection,
+        setActiveSection,
+        setActiveSubSection,
+      }}
     >
       {children}
     </NavigationContext.Provider>

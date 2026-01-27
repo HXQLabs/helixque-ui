@@ -10,20 +10,20 @@ interface TimeoutAlertProps {
   onKeyDown: (e: React.KeyboardEvent) => void;
 }
 
-export default function TimeoutAlert({ 
-  show, 
-  message, 
-  onRetry, 
-  onCancel, 
-  onKeyDown 
+export default function TimeoutAlert({
+  show,
+  message,
+  onRetry,
+  onCancel,
+  onKeyDown,
 }: TimeoutAlertProps) {
   if (!show) return null;
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" 
-      role="dialog" 
-      aria-modal="true" 
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
       aria-labelledby="timeout-title"
       onKeyDown={onKeyDown}
     >
@@ -32,15 +32,19 @@ export default function TimeoutAlert({
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-orange-600/20">
             <IconFlag className="h-6 w-6 text-orange-400" />
           </div>
-          
-          <h3 id="timeout-title" className="mb-2 text-lg font-semibold text-white">
+
+          <h3
+            id="timeout-title"
+            className="mb-2 text-lg font-semibold text-white"
+          >
             No Match Found
           </h3>
-          
+
           <p className="mb-6 text-sm text-neutral-400">
-            {message || "We couldn't find a match right now. Please try again later."}
+            {message ||
+              "We couldn't find a match right now. Please try again later."}
           </p>
-          
+
           <div className="flex gap-3">
             <button
               onClick={onRetry}

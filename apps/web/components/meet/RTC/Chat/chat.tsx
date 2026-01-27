@@ -2,9 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { Socket } from "socket.io-client";
 import { toast } from "sonner";
-import type { EmojiClickData} from "emoji-picker-react"
-import EmojiPicker, {Theme} from "emoji-picker-react";
-import { IconMoodSmile } from '@tabler/icons-react'
+import type { EmojiClickData } from "emoji-picker-react";
+import EmojiPicker, { Theme } from "emoji-picker-react";
+import { IconMoodSmile } from "@tabler/icons-react";
 
 type ChatMessage = {
   text: string;
@@ -14,8 +14,8 @@ type ChatMessage = {
   kind?: "user" | "system";
 };
 
-const MAX_LEN = 1000;        // match server cap
-const MAX_BUFFER = 300;      // keep memory tidy
+const MAX_LEN = 1000; // match server cap
+const MAX_BUFFER = 300; // keep memory tidy
 const TYPING_DEBOUNCE = 350; // ms
 
 export default function ChatPanel({
@@ -40,31 +40,34 @@ export default function ChatPanel({
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const typingDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sidRef = useRef<string | null>(mySocketId ?? null);
-  const emojiRef=useRef<HTMLDivElement>(null)
-  const inputRef=useRef<HTMLInputElement>(null)
+  const emojiRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [emojiPickerOpen, setEmojiPickerOpen] = useState<boolean>(false);
   const [cursorPosition, setCursorPosition] = useState<number>(0);
   const didJoinRef = useRef<Record<string, string>>({});
 
-    useEffect(()=>{
-  function handleClickOutside(event:MouseEvent){
-    if(emojiRef.current && !emojiRef.current.contains(event.target as Node)){
-      // Only proceed if the picker is currently open
-      if(emojiPickerOpen) {
-        setEmojiPickerOpen(false);
-        setTimeout(() => {
-          if(inputRef.current){
-            inputRef.current.focus();
-          }
-        }, 5);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        emojiRef.current &&
+        !emojiRef.current.contains(event.target as Node)
+      ) {
+        // Only proceed if the picker is currently open
+        if (emojiPickerOpen) {
+          setEmojiPickerOpen(false);
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }, 5);
+        }
       }
     }
-  }
-  document.addEventListener("mousedown",handleClickOutside);
-  return ()=>{
-    document.removeEventListener("mousedown",handleClickOutside)         
-  }
-}, [emojiPickerOpen]); // Add dependency here
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [emojiPickerOpen]); // Add dependency here
 
   // derive & keep socket.id fresh for self-dedupe
   useEffect(() => {
@@ -79,8 +82,13 @@ export default function ChatPanel({
     };
   }, [socket]);
 
-  const canSend = !!socket && socket.connected && !!roomId && !!name && !!(sidRef.current || mySocketId);
-  
+  const canSend =
+    !!socket &&
+    socket.connected &&
+    !!roomId &&
+    !!name &&
+    !!(sidRef.current || mySocketId);
+
   // Dismiss existing toasts when chat window opens
   useEffect(() => {
     if (isOpen) {
@@ -123,23 +131,23 @@ export default function ChatPanel({
         const next = [...prev, { ...m, kind: "user" as const }];
         return next.length > MAX_BUFFER ? next.slice(-MAX_BUFFER) : next;
       });
-        try {
-          // Only show toast if chat window is closed
-          if (!isOpen) {
-            // Hide actual username in notification for privacy - always show "Peer"
-            toast.success(
-              `Peer: ${m.text.length > 80 ? m.text.slice(0, 77) + '...' : m.text}`,
-              { 
-                duration: 3500,
-                position: 'bottom-right',
-                style: {
-                  bottom: '100px', // Position above the control icons
-                  right: '20px',
-                }
-              }
-            );
-          }
-        } catch {}
+      try {
+        // Only show toast if chat window is closed
+        if (!isOpen) {
+          // Hide actual username in notification for privacy - always show "Peer"
+          toast.success(
+            `Peer: ${m.text.length > 80 ? m.text.slice(0, 77) + "..." : m.text}`,
+            {
+              duration: 3500,
+              position: "bottom-right",
+              style: {
+                bottom: "100px", // Position above the control icons
+                right: "20px",
+              },
+            },
+          );
+        }
+      } catch {}
     };
 
     const onSystem = (m: { text: string; ts?: number }) => {
@@ -151,7 +159,9 @@ export default function ChatPanel({
           if (match) {
             const who = (match[1] || "").trim();
             const action = match[2];
-            const isSelf = who.length > 0 && who.toLowerCase() === (name || "").toLowerCase();
+            const isSelf =
+              who.length > 0 &&
+              who.toLowerCase() === (name || "").toLowerCase();
             return `${isSelf ? name : "Peer"} ${action} the chat`;
           }
         } catch {}
@@ -165,7 +175,13 @@ export default function ChatPanel({
         if (last?.kind === "system" && last.text === text) return prev;
         const next = [
           ...prev,
-          { text, from: "system", clientId: "system", ts: m.ts ?? Date.now(), kind: "system" as const },
+          {
+            text,
+            from: "system",
+            clientId: "system",
+            ts: m.ts ?? Date.now(),
+            kind: "system" as const,
+          },
         ];
         return next.length > MAX_BUFFER ? next.slice(-MAX_BUFFER) : next;
       });
@@ -179,7 +195,6 @@ export default function ChatPanel({
       }
     };
 
-
     // Handler for when partner leaves the chat
     // const onPartnerLeft = ({ reason }: { reason: string }) => {
     //   console.log("👋 PARTNER LEFT - Chat event received with reason:", reason);
@@ -187,12 +202,16 @@ export default function ChatPanel({
     // };
 
     // Server-sent history: merge with current messages and de-dupe
-    const onHistory = (payload: { roomId: string; messages: ChatMessage[] }) => {
+    const onHistory = (payload: {
+      roomId: string;
+      messages: ChatMessage[];
+    }) => {
       if (!payload || payload.roomId !== roomId) return;
       const incoming = Array.isArray(payload.messages) ? payload.messages : [];
       if (incoming.length === 0) return;
       setMessages((prev) => {
-        const keyOf = (x: ChatMessage) => `${x.kind || 'user'}|${x.ts}|${x.clientId}|${x.text}`;
+        const keyOf = (x: ChatMessage) =>
+          `${x.kind || "user"}|${x.ts}|${x.clientId}|${x.text}`;
         const seen = new Set(prev.map(keyOf));
         const add = incoming.filter((m) => !seen.has(keyOf(m)));
         if (add.length === 0) return prev;
@@ -251,29 +270,26 @@ export default function ChatPanel({
     socket!.emit("chat:typing", { roomId, from: name, typing: false });
   };
 
-  const handleAddEmoji=(emoji:EmojiClickData)=>{
-       const start = cursorPosition;  
-       const newMsg = input.slice(0, start) + emoji.emoji + input.slice(start);
-       setInput(newMsg);
-       
-       const newCursorPos = start + emoji.emoji.length;
-       setCursorPosition(newCursorPos);
+  const handleAddEmoji = (emoji: EmojiClickData) => {
+    const start = cursorPosition;
+    const newMsg = input.slice(0, start) + emoji.emoji + input.slice(start);
+    setInput(newMsg);
 
+    const newCursorPos = start + emoji.emoji.length;
+    setCursorPosition(newCursorPos);
 
-          if (!socket || !roomId) return;
-             if (typingDebounceRef.current) clearTimeout(typingDebounceRef.current);
-              typingDebounceRef.current = setTimeout(() => {
+    if (!socket || !roomId) return;
+    if (typingDebounceRef.current) clearTimeout(typingDebounceRef.current);
+    typingDebounceRef.current = setTimeout(() => {
       socket.emit("chat:typing", { roomId, from: name, typing: !!newMsg });
     }, TYPING_DEBOUNCE);
-        
-        
-    }
+  };
 
   const handleTyping = (value: string) => {
     setInput(value);
 
-    if(inputRef.current){
-      setCursorPosition(inputRef.current.selectionStart || value.length)
+    if (inputRef.current) {
+      setCursorPosition(inputRef.current.selectionStart || value.length);
     }
     if (!socket || !roomId) return;
 
@@ -287,19 +303,27 @@ export default function ChatPanel({
 
   return (
     <div className="flex flex-col h-full bg-neutral-950 rounded-l-2xl overflow-hidden">
-      <div ref={scrollerRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
+      <div
+        ref={scrollerRef}
+        className="flex-1 overflow-y-auto px-3 py-3 space-y-2"
+      >
         {messages.map((m, idx) => {
           const myId = mySocketId || sidRef.current;
           const mine = m.clientId === myId;
           const isSystem = m.kind === "system";
           return (
-            <div key={idx} className={`flex ${isSystem ? "justify-center" : mine ? "justify-end" : "justify-start"}`}>
+            <div
+              key={idx}
+              className={`flex ${isSystem ? "justify-center" : mine ? "justify-end" : "justify-start"}`}
+            >
               <div
                 className={
                   isSystem
                     ? "text-xs text-white/50 italic"
                     : `max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
-                        mine ? "bg-indigo-600 text-white" : "bg-white/10 text-white/90"
+                        mine
+                          ? "bg-indigo-600 text-white"
+                          : "bg-white/10 text-white/90"
                       }`
                 }
                 title={new Date(m.ts).toLocaleTimeString()}
@@ -308,7 +332,9 @@ export default function ChatPanel({
                   <span>{m.text}</span>
                 ) : (
                   <>
-                    {!mine && <div className="text-[10px] text-white/60 mb-1">Peer</div>}
+                    {!mine && (
+                      <div className="text-[10px] text-white/60 mb-1">Peer</div>
+                    )}
                     <div>{m.text}</div>
                   </>
                 )}
@@ -316,35 +342,57 @@ export default function ChatPanel({
             </div>
           );
         })}
-        {peerTyping && <div className="text-xs text-white/60 italic">{peerTyping}</div>}
+        {peerTyping && (
+          <div className="text-xs text-white/60 italic">{peerTyping}</div>
+        )}
       </div>
 
       <div className="p-3 border-t border-white/10">
         <div className="flex items-center gap-2">
-            <div className="relative w-full flex-1">
-          <input
-            ref={inputRef}
-            className=" bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500/60 w-full"
-            placeholder={canSend ? "Type a message…" : "Connecting chat…"}
-            value={input}
-            onChange={(e) => handleTyping(e.target.value)}
-            onClick={(e)=>setCursorPosition(e.currentTarget.selectionStart||input.length)}
-            onKeyUp={(e) => setCursorPosition(e.currentTarget.selectionStart || input.length)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") sendMessage();
-            }}
-            disabled={!canSend}
-            maxLength={MAX_LEN}
-          /> 
-         <div className="absolute right-2 bottom-0 ">
-          <button onClick={(e)=>{e.stopPropagation();if(canSend)setEmojiPickerOpen(true)}} className={`${canSend ? ' hover:text-white focus:text-white ' : '' } text-neutral-500 focus:border-none focus:outline-none duration-300 transition-all`} aria-label="Open emoji picker">
-            <IconMoodSmile size={24}/>
-          </button>
-          <div className='absolute bottom-16 right-0' ref={emojiRef}>
-            <EmojiPicker theme={Theme.DARK} open={emojiPickerOpen} onEmojiClick={handleAddEmoji} autoFocusSearch={false}/>
+          <div className="relative w-full flex-1">
+            <input
+              ref={inputRef}
+              className=" bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500/60 w-full"
+              placeholder={canSend ? "Type a message…" : "Connecting chat…"}
+              value={input}
+              onChange={(e) => handleTyping(e.target.value)}
+              onClick={(e) =>
+                setCursorPosition(
+                  e.currentTarget.selectionStart || input.length,
+                )
+              }
+              onKeyUp={(e) =>
+                setCursorPosition(
+                  e.currentTarget.selectionStart || input.length,
+                )
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") sendMessage();
+              }}
+              disabled={!canSend}
+              maxLength={MAX_LEN}
+            />
+            <div className="absolute right-2 bottom-0 ">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (canSend) setEmojiPickerOpen(true);
+                }}
+                className={`${canSend ? " hover:text-white focus:text-white " : ""} text-neutral-500 focus:border-none focus:outline-none duration-300 transition-all`}
+                aria-label="Open emoji picker"
+              >
+                <IconMoodSmile size={24} />
+              </button>
+              <div className="absolute bottom-16 right-0" ref={emojiRef}>
+                <EmojiPicker
+                  theme={Theme.DARK}
+                  open={emojiPickerOpen}
+                  onEmojiClick={handleAddEmoji}
+                  autoFocusSearch={false}
+                />
+              </div>
+            </div>
           </div>
-        </div>
-</div>
           <button
             onClick={sendMessage}
             disabled={!canSend || !input.trim()}

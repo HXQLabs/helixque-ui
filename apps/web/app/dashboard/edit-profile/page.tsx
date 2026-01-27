@@ -14,13 +14,18 @@ import {
   Globe,
   Clock,
   MapPin,
+  UserPen,
 } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Separator } from "@workspace/ui/components/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar";
 import { Badge } from "@workspace/ui/components/badge";
 import {
   UserProfileSchema,
@@ -38,6 +43,11 @@ const EditProfileFormSchema = z.object({
   profile: UserProfileSchema,
   availability: UserAvailabilitySchema,
   customDomain: z.string().optional(), // Temporary field for custom domain input
+  bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
+  headline: z
+    .string()
+    .max(100, "Headline must be less than 100 characters")
+    .optional(),
 });
 
 type EditProfileFormValues = z.infer<typeof EditProfileFormSchema>;
@@ -49,7 +59,7 @@ export default function EditProfilePage() {
   const { setActiveSection } = useNavigation();
   const { data: session, update: updateSession } = useSession();
   const router = useRouter();
-  
+
   React.useEffect(() => {
     setActiveSection("Account", "Edit Profile");
   }, [setActiveSection]);
@@ -63,6 +73,8 @@ export default function EditProfilePage() {
     defaultValues: {
       displayName: "",
       email: "",
+      bio: "",
+      headline: "",
       profile: {
         languages: [],
         role: "",
@@ -94,53 +106,60 @@ export default function EditProfilePage() {
     const fetchUserData = async () => {
       if (session?.user?.id) {
         try {
-          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
-          const response = await fetch(`${backendUrl}/users/${session.user.id}`);
-          
+          const backendUrl =
+            process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
+          const response = await fetch(
+            `${backendUrl}/users/${session.user.id}`,
+          );
+
           if (!response.ok) {
-             throw new Error("Failed to fetch user data");
+            throw new Error("Failed to fetch user data");
           }
 
           const userData = await response.json();
-            
+
           // Map backend data to form structure
           reset({
             displayName: userData.username || session.user.name || "",
             email: userData.email || session.user.email || "",
+            bio: userData.bio || "",
+            headline: userData.headline || "",
             profile: {
-                languages: userData.languages || [],
-                role: userData.role || "",
-                domain: userData.domain || "",
-                techStack: userData.skills || [],
-                experience: userData.yearsExperience || "0-1",
+              languages: userData.languages || [],
+              role: userData.role || "",
+              domain: userData.domain || "",
+              techStack: userData.skills || [],
+              experience: userData.yearsExperience || "0-1",
             },
             availability: {
-                timezone: userData.preferences?.timezone || "",
-                workingHours: userData.preferences?.workingHours || "",
-                status: userData.status || "ONLINE",
+              timezone: userData.preferences?.timezone || "",
+              workingHours: userData.preferences?.workingHours || "",
+              status: userData.status || "ONLINE",
             },
           });
-          
+
           setAvatarUrl(userData.imageUrl || session.user.image || "");
         } catch (error) {
           console.warn("Backend unavailable, using mock profile data:", error);
           toast.error("Backend unavailable. Loading demo profile.");
-          
+
           // Mock Profile Data
           reset({
             displayName: session.user.name || "Demo User",
             email: session.user.email || "demo@example.com",
+            bio: "Passionate developer building great things.",
+            headline: "Software Engineer @ Tech Co",
             profile: {
-                languages: ["English", "Spanish"],
-                role: "Full Stack Developer",
-                domain: "Technology",
-                techStack: ["React", "Node.js", "TypeScript"],
-                experience: "3-5",
+              languages: ["English", "Spanish"],
+              role: "Full Stack Developer",
+              domain: "Technology",
+              techStack: ["React", "Node.js", "TypeScript"],
+              experience: "3-5",
             },
             availability: {
-                timezone: "UTC",
-                workingHours: "09:00 - 17:00",
-                status: "AVAILABLE",
+              timezone: "UTC",
+              workingHours: "09:00 - 17:00",
+              status: "AVAILABLE",
             },
           });
           setAvatarUrl(session.user.image || "");
@@ -149,7 +168,7 @@ export default function EditProfilePage() {
         }
       }
     };
-    
+
     fetchUserData();
   }, [session, reset]);
 
@@ -159,70 +178,76 @@ export default function EditProfilePage() {
 
   const onSubmit = async (data: EditProfileFormValues) => {
     let finalData = { ...data };
-    
+
     // Handle custom domain
     if (data.profile.domain === "Other" && data.customDomain) {
       finalData.profile.domain = data.customDomain;
     }
-    
+
     // Remove temporary field
     delete (finalData as any).customDomain;
 
     setIsSaving(true);
     try {
-        const userId = session?.user?.id;
-        if (!userId) {
-            toast.error("You must be logged in to save changes");
-            return;
-        }
+      const userId = session?.user?.id;
+      if (!userId) {
+        toast.error("You must be logged in to save changes");
+        return;
+      }
 
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
-        
-        let success = false;
-        try {
-           const response = await fetch(`${backendUrl}/users/${userId}`, {
-               method: "PUT",
-               headers: {
-                   "Content-Type": "application/json",
-               },
-               body: JSON.stringify({
-                   username: finalData.displayName,
-                   email: finalData.email,
-                   domain: finalData.profile.domain,
-                   role: finalData.profile.role,
-                   skills: finalData.profile.techStack,
-                   languages: finalData.profile.languages,
-                   yearsExperience: finalData.profile.experience,
-                   status: finalData.availability.status,
-               })
-           });
-           if (response.ok) success = true;
-           else throw new Error("Backend save failed");
-        } catch (backendError) {
-           console.warn("Backend save failed, falling back to local update:", backendError);
-           toast.warning("Backend unavailable using local update only.");
-           // Treat as success for demo purposes
-           success = true; 
-        }
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
 
-        if (success) {
-            // Update session locally
-            await updateSession({
-                isOnboarded: true,
-                user: {
-                    ...session.user,
-                    name: finalData.displayName,
-                }
-            });
+      let success = false;
+      try {
+        const response = await fetch(`${backendUrl}/users/${userId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: finalData.displayName,
+            email: finalData.email,
+            bio: finalData.bio,
+            headline: finalData.headline,
+            domain: finalData.profile.domain,
+            role: finalData.profile.role,
+            skills: finalData.profile.techStack,
+            languages: finalData.profile.languages,
+            yearsExperience: finalData.profile.experience,
+            status: finalData.availability.status,
+          }),
+        });
+        if (response.ok) success = true;
+        else throw new Error("Backend save failed");
+      } catch (backendError) {
+        console.warn(
+          "Backend save failed, falling back to local update:",
+          backendError,
+        );
+        toast.warning("Backend unavailable using local update only.");
+        // Treat as success for demo purposes
+        success = true;
+      }
 
-            toast.success("Profile updated successfully");
-            router.refresh();
-        }
+      if (success) {
+        // Update session locally
+        await updateSession({
+          isOnboarded: true,
+          user: {
+            ...session.user,
+            name: finalData.displayName,
+          },
+        });
+
+        toast.success("Profile updated successfully");
+        router.refresh();
+      }
     } catch (error) {
-        console.error(error);
-        toast.error("Failed to save changes");
+      console.error(error);
+      toast.error("Failed to save changes");
     } finally {
-        setIsSaving(false);
+      setIsSaving(false);
     }
   };
 
@@ -240,7 +265,7 @@ export default function EditProfilePage() {
   const removeTech = (tech: string) => {
     setValue(
       "profile.techStack",
-      (techStack || []).filter((t) => t !== tech)
+      (techStack || []).filter((t) => t !== tech),
     );
   };
 
@@ -300,7 +325,9 @@ export default function EditProfilePage() {
                   className={errors.displayName ? "border-destructive" : ""}
                 />
                 {errors.displayName && (
-                  <p className="text-destructive text-sm">{errors.displayName.message}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.displayName.message}
+                  </p>
                 )}
               </div>
               <div className="grid gap-2">
@@ -312,8 +339,56 @@ export default function EditProfilePage() {
                   className={errors.email ? "border-destructive" : ""}
                 />
                 {errors.email && (
-                  <p className="text-destructive text-sm">{errors.email.message}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.email.message}
+                  </p>
                 )}
+              </div>
+            </div>
+
+            {/* Bio & Headline */}
+            <div className="bg-card border border-border/50 rounded-xl p-6 space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <UserPen className="h-5 w-5 text-purple-500" />
+                <h2 className="text-lg font-semibold">About You</h2>
+              </div>
+
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="headline">Headline</Label>
+                  <Input
+                    id="headline"
+                    {...register("headline")}
+                    placeholder="e.g. Senior Frontend Engineer | React Specialist"
+                    className={errors.headline ? "border-destructive" : ""}
+                  />
+                  {errors.headline && (
+                    <p className="text-destructive text-sm">
+                      {errors.headline.message}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-muted-foreground">
+                    Short professional tagline (max 100 chars).
+                  </p>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="bio">Bio</Label>
+                  <textarea
+                    id="bio"
+                    {...register("bio")}
+                    className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Tell us about yourself, your experience, and what you're looking for..."
+                  />
+                  {errors.bio && (
+                    <p className="text-destructive text-sm">
+                      {errors.bio.message}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-muted-foreground">
+                    Share your professional journey (max 500 chars).
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -326,7 +401,7 @@ export default function EditProfilePage() {
               <Briefcase className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-semibold">Professional Details</h2>
             </div>
-            
+
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="role">Current Role</Label>
@@ -335,13 +410,19 @@ export default function EditProfilePage() {
                   {...register("profile.role")}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <option value="" disabled>Select your role</option>
+                  <option value="" disabled>
+                    Select your role
+                  </option>
                   {ROLES.map((role) => (
-                    <option key={role} value={role}>{role}</option>
+                    <option key={role} value={role}>
+                      {role}
+                    </option>
                   ))}
                 </select>
                 {errors.profile?.role && (
-                  <p className="text-destructive text-sm">{errors.profile.role.message}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.profile.role.message}
+                  </p>
                 )}
               </div>
 
@@ -353,19 +434,30 @@ export default function EditProfilePage() {
                     {...register("profile.domain")}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <option value="" disabled>Select a domain</option>
+                    <option value="" disabled>
+                      Select a domain
+                    </option>
                     {DOMAINS.map((domain) => (
-                      <option key={domain} value={domain}>{domain}</option>
+                      <option key={domain} value={domain}>
+                        {domain}
+                      </option>
                     ))}
                   </select>
                 </div>
                 {errors.profile?.domain && (
-                  <p className="text-destructive text-sm">{errors.profile.domain.message}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.profile.domain.message}
+                  </p>
                 )}
-                
+
                 {selectedDomain === "Other" && (
                   <div className="mt-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                    <Label htmlFor="customDomain" className="text-xs text-muted-foreground mb-1 block">Specify Domain</Label>
+                    <Label
+                      htmlFor="customDomain"
+                      className="text-xs text-muted-foreground mb-1 block"
+                    >
+                      Specify Domain
+                    </Label>
                     <Input
                       id="customDomain"
                       {...register("customDomain")}
@@ -389,7 +481,9 @@ export default function EditProfilePage() {
                   <option value="8+">8+ Years</option>
                 </select>
                 {errors.profile?.experience && (
-                  <p className="text-destructive text-sm">{errors.profile.experience.message}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.profile.experience.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -408,14 +502,20 @@ export default function EditProfilePage() {
                 <Combobox
                   options={SPOKEN_LANGUAGES}
                   value={watch("profile.languages") || []}
-                  onChange={(val) => setValue("profile.languages", val as string[], { shouldValidate: true })}
+                  onChange={(val) =>
+                    setValue("profile.languages", val as string[], {
+                      shouldValidate: true,
+                    })
+                  }
                   placeholder="Select languages"
                   searchPlaceholder="Search language..."
                   multiple
                   allowCustom
                 />
                 {errors.profile?.languages && (
-                  <p className="text-destructive text-sm">{errors.profile.languages.message}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.profile.languages.message}
+                  </p>
                 )}
               </div>
 
@@ -424,7 +524,11 @@ export default function EditProfilePage() {
                 <Combobox
                   options={TECH_STACK}
                   value={watch("profile.techStack") || []}
-                  onChange={(val) => setValue("profile.techStack", val as string[], { shouldValidate: true })}
+                  onChange={(val) =>
+                    setValue("profile.techStack", val as string[], {
+                      shouldValidate: true,
+                    })
+                  }
                   placeholder="Select skills"
                   searchPlaceholder="Search skills..."
                   multiple
@@ -444,7 +548,9 @@ export default function EditProfilePage() {
                   ))}
                 </div>
                 {errors.profile?.techStack && (
-                  <p className="text-destructive text-sm">{errors.profile.techStack.message}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.profile.techStack.message}
+                  </p>
                 )}
               </div>
             </div>

@@ -24,7 +24,10 @@ import { SettingsDialog } from "./settings-dialog";
 import { useHelixque } from "@workspace/state";
 
 export function CommandMenu() {
-  const { open, settingsOpen, setOpen, setSettingsOpen } = useHelixque();
+  const open = useHelixque((state) => state.open);
+  const settingsOpen = useHelixque((state) => state.settingsOpen);
+  const setOpen = useHelixque((state) => state.setOpen);
+  const setSettingsOpen = useHelixque((state) => state.setSettingsOpen);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {

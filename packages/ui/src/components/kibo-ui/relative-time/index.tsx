@@ -12,20 +12,20 @@ import { cn } from "@workspace/ui/lib/utils";
 const formatDate = (
   date: Date,
   timeZone: string,
-  options?: Intl.DateTimeFormatOptions
+  options?: Intl.DateTimeFormatOptions,
 ) =>
   new Intl.DateTimeFormat(
     "en-US",
     options ?? {
       dateStyle: "long",
       timeZone,
-    }
+    },
   ).format(date);
 
 const formatTime = (
   date: Date,
   timeZone: string,
-  options?: Intl.DateTimeFormatOptions
+  options?: Intl.DateTimeFormatOptions,
 ) =>
   new Intl.DateTimeFormat(
     "en-US",
@@ -34,7 +34,7 @@ const formatTime = (
       minute: "2-digit",
       second: "2-digit",
       timeZone,
-    }
+    },
   ).format(date);
 
 type RelativeTimeContextType = {
@@ -125,7 +125,7 @@ export const RelativeTimeZone = ({
     <div
       className={cn(
         "flex items-center justify-between gap-1.5 text-xs",
-        className
+        className,
       )}
       {...props}
     />
@@ -162,7 +162,11 @@ export const RelativeTimeZoneDate = ({
   const { zone } = useContext(RelativeTimeZoneContext);
   const display = formatDate(time, zone, dateFormatOptions);
 
-  return <div {...props}>{display}</div>;
+  return (
+    <div className={className} {...props}>
+      {display}
+    </div>
+  );
 };
 
 export type RelativeTimeZoneLabelProps = HTMLAttributes<HTMLDivElement>;
@@ -174,7 +178,7 @@ export const RelativeTimeZoneLabel = ({
   <div
     className={cn(
       "flex h-4 items-center justify-center rounded-xs bg-secondary px-1.5 font-mono",
-      className
+      className,
     )}
     {...props}
   />

@@ -39,7 +39,9 @@ export default function DeviceCheck() {
     setAudioOn,
   } = useHelixque();
 
-  const [preferences, setPreferences] = useState<z.infer<typeof UserCriteriaSchema> | null>(null);
+  const [preferences, setPreferences] = useState<z.infer<
+    typeof UserCriteriaSchema
+  > | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const localAudioTrackRef = useRef<MediaStreamTrack | null>(null);
@@ -154,24 +156,25 @@ export default function DeviceCheck() {
   const { data: session } = useSession();
 
   const handleJoin = async (data: z.infer<typeof UserCriteriaSchema>) => {
-      try {
-        const userId = (session?.user as any)?.id;
-        if (userId) {
-          const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
-          await fetch(`${backendUrl}/users/${userId}/preferences`, {
-             method: "POST",
-             headers: { "Content-Type": "application/json" },
-             body: JSON.stringify(data)
-          });
-          toast.success("Preferences saved");
-        }
-      } catch (error) {
-        console.error("Failed to save preferences:", error);
-        toast.error("Failed to save preferences");
+    try {
+      const userId = (session?.user as any)?.id;
+      if (userId) {
+        const backendUrl =
+          process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
+        await fetch(`${backendUrl}/users/${userId}/preferences`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        toast.success("Preferences saved");
       }
-      setPreferences(data);
-      setJoined(true);
-  }
+    } catch (error) {
+      console.error("Failed to save preferences:", error);
+      toast.error("Failed to save preferences");
+    }
+    setPreferences(data);
+    setJoined(true);
+  };
 
   if (joined) {
     const handleOnLeave = () => {
@@ -308,9 +311,7 @@ export default function DeviceCheck() {
                   <IconRefresh className="h-5 w-5 transition-transform hover:rotate-180 duration-500" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
-                Refresh devices
-              </TooltipContent>
+              <TooltipContent>Refresh devices</TooltipContent>
             </Tooltip>
           </div>
         </div>

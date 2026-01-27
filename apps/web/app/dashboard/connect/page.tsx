@@ -19,7 +19,11 @@ import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Badge } from "@workspace/ui/components/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar";
 import { Separator } from "@workspace/ui/components/separator";
 import { useRouter } from "next/navigation";
 
@@ -29,7 +33,8 @@ type ConnectionType = "anonymous" | "professional";
 export default function ConnectPage() {
   const router = useRouter();
   const [mode, setMode] = React.useState<MatchMode>("loose");
-  const [connectionType, setConnectionType] = React.useState<ConnectionType>("professional");
+  const [connectionType, setConnectionType] =
+    React.useState<ConnectionType>("professional");
   const [isSearching, setIsSearching] = React.useState(false);
   const [matchFound, setMatchFound] = React.useState(false);
   const [industry, setIndustry] = React.useState("");
@@ -59,8 +64,8 @@ export default function ConnectPage() {
           Find Your Next Connection
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Connect instantly with professionals worldwide. Choose your matching style
-          and start networking in seconds.
+          Connect instantly with professionals worldwide. Choose your matching
+          style and start networking in seconds.
         </p>
       </div>
 
@@ -221,10 +226,12 @@ export default function ConnectPage() {
                 <Search className="h-10 w-10 text-muted-foreground/50" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">Ready to Connect?</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Ready to Connect?
+                </h3>
                 <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                  Set your preferences and click "Find Connection" to start matching
-                  with professionals.
+                  Set your preferences and click "Find Connection" to start
+                  matching with professionals.
                 </p>
               </div>
             </div>
@@ -241,7 +248,9 @@ export default function ConnectPage() {
                 </Avatar>
               </div>
               <div>
-                <h3 className="text-xl font-bold mb-2">Searching for a match...</h3>
+                <h3 className="text-xl font-bold mb-2">
+                  Searching for a match...
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   Looking for professionals in your criteria
                 </p>
@@ -273,8 +282,8 @@ export default function ConnectPage() {
                     <Badge variant="secondary">Mentorship</Badge>
                   </div>
                   <p className="text-sm text-muted-foreground italic max-w-md mx-auto">
-                    "Passionate about building accessible interfaces and mentoring
-                    junior designers."
+                    "Passionate about building accessible interfaces and
+                    mentoring junior designers."
                   </p>
                 </div>
               </div>
@@ -294,7 +303,7 @@ export default function ConnectPage() {
                   className="gap-2"
                   onClick={() =>
                     router.push(
-                      `/meet?identity=${connectionType === "anonymous" ? "anonymous" : "exposed"}`
+                      `/meet?identity=${connectionType === "anonymous" ? "anonymous" : "exposed"}`,
                     )
                   }
                 >
@@ -344,7 +353,9 @@ export default function ConnectPage() {
               <feature.icon className="h-6 w-6 text-primary" />
             </div>
             <h3 className="font-semibold mb-2">{feature.title}</h3>
-            <p className="text-sm text-muted-foreground">{feature.description}</p>
+            <p className="text-sm text-muted-foreground">
+              {feature.description}
+            </p>
           </div>
         ))}
       </div>

@@ -11,7 +11,16 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import { Button } from "@workspace/ui/components/button";
-import { Calendar } from "@workspace/ui/components/calendar";
+import dynamic from "next/dynamic";
+const Calendar = dynamic(
+  () => import("@workspace/ui/components/calendar").then((mod) => mod.Calendar),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[300px] w-full animate-pulse bg-muted/20 rounded-md" />
+    ),
+  },
+);
 import { Badge } from "@workspace/ui/components/badge";
 import {
   Dialog,
@@ -35,6 +44,8 @@ import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { toast } from "sonner";
 import { Textarea } from "@workspace/ui/components/textarea";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
 
 interface Meeting {
   id: string;
@@ -60,26 +71,53 @@ export default function Page() {
   const { data: session } = useSession();
   const userId = (session?.user as any)?.id;
 
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
+    new Date(),
+  );
   const [showMeetingDetails, setShowMeetingDetails] = React.useState(false);
   const [showScheduleDialog, setShowScheduleDialog] = React.useState(false);
-  
-  const [stats, setStats] = React.useState<DashboardStats>({
-    meetingsCount: 0,
-    upcomingMeetingsCount: 0,
-    connectionsCount: 0,
-    profileViews: 0
-  });
-  const [meetings, setMeetings] = React.useState<Meeting[]>([]);
-  const [selectedDateMeetings, setSelectedDateMeetings] = React.useState<Meeting[]>([]);
+  const backendUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
+
+  // SWR Fetching
+  const { data: stats, mutate: mutateStats } = useSWR<DashboardStats>(
+    userId ? `${backendUrl}/users/${userId}/stats` : null,
+    fetcher,
+    {
+      fallbackData: {
+        meetingsCount: 0,
+        upcomingMeetingsCount: 0,
+        connectionsCount: 0,
+        profileViews: 0,
+      },
+    },
+  );
+
+  const { data: meetings, mutate: mutateMeetings } = useSWR<Meeting[]>(
+    userId ? `${backendUrl}/meetings/user/${userId}` : null,
+    fetcher,
+    {
+      fallbackData: [],
+    },
+  );
+
+  const [selectedDateMeetings, setSelectedDateMeetings] = React.useState<
+    Meeting[]
+  >([]);
 
   // New Meeting Form State
   const [newMeeting, setNewMeeting] = React.useState({
     title: "",
     description: "",
     date: format(new Date(), "yyyy-MM-dd"),
-    startTime: "09:00",
-    endTime: "10:00",
+    startTime: format(
+      new Date(new Date().setHours(new Date().getHours() + 1, 0, 0, 0)),
+      "HH:mm",
+    ),
+    endTime: format(
+      new Date(new Date().setHours(new Date().getHours() + 2, 0, 0, 0)),
+      "HH:mm",
+    ),
   });
 
   // Initialize Breadcrumbs
@@ -88,88 +126,42 @@ export default function Page() {
     setActiveSubSection("Overview");
   }, [setActiveSection, setActiveSubSection]);
 
-  // Fetch Data
-  React.useEffect(() => {
-    if (!userId) return;
-
-    const fetchData = async () => {
-      try {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
-        
-        // Fetch Stats
-        const statsRes = await fetch(`${backendUrl}/users/${userId}/stats`);
-        if (statsRes.ok) {
-          setStats(await statsRes.json());
-        } else {
-           throw new Error("Stats fetch failed");
-        }
-
-        // Fetch Meetings
-        const meetingsRes = await fetch(`${backendUrl}/meetings/user/${userId}`);
-        if (meetingsRes.ok) {
-          const data = await meetingsRes.json();
-          setMeetings(data);
-        } else {
-           throw new Error("Meetings fetch failed");
-        }
-      } catch (error) {
-        console.warn("Backend unreachable, using mock data:", error);
-        toast.error("Backend unavailable. Loading demo data.");
-        
-        // Mock Stats
-        setStats({
-          meetingsCount: 12,
-          upcomingMeetingsCount: 3,
-          connectionsCount: 45,
-          profileViews: 128
-        });
-
-        // Mock Upcoming Meetings
-        setMeetings([
-            {
-                id: "1",
-                title: "Team Sync",
-                startTime: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(), // Tomorrow
-                endTime: new Date(Date.now() + 1000 * 60 * 60 * 25).toISOString(),
-                type: "scheduled",
-                status: "confirmed",
-                participants: []
-            },
-             {
-                id: "2",
-                title: "Project Review",
-                startTime: new Date(Date.now() + 1000 * 60 * 60 * 48).toISOString(), // Day after tomorrow
-                endTime: new Date(Date.now() + 1000 * 60 * 60 * 49).toISOString(),
-                type: "scheduled",
-                status: "confirmed",
-                participants: []
-            }
-        ]);
-      }
-    };
-
-    fetchData();
-  }, [userId]);
-
   const upcomingMeetings = React.useMemo(() => {
+    if (!meetings) return [];
+    const now = new Date();
+
     return meetings
-      .filter(m => new Date(m.startTime) > new Date())
-      .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+      .filter((m) => {
+        const mStartDate = new Date(m.startTime);
+        const mEndDate = new Date(m.endTime);
+
+        if (isNaN(mStartDate.getTime()) || isNaN(mEndDate.getTime()))
+          return false;
+
+        // Show if the meeting hasn't ENDED yet (includes ongoing)
+        return mEndDate > now;
+      })
+      .sort(
+        (a, b) =>
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime(),
+      );
   }, [meetings]);
 
   // Calculate meetings count by date for the calendar
   const getMeetingCountByDate = (date: Date): number => {
-    return meetings.filter(
-      (m) => new Date(m.startTime).toDateString() === date.toDateString()
-    ).length;
+    return (
+      meetings?.filter(
+        (m) => new Date(m.startTime).toDateString() === date.toDateString(),
+      ).length || 0
+    );
   };
 
   // Get meetings for selected date
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
-    if (date) {
+    if (date && meetings) {
       const meetingsForDate = meetings.filter(
-        (m) => new Date(m.startTime).toDateString() === date.toDateString()
+        (m) => new Date(m.startTime).toDateString() === date.toDateString(),
       );
       setSelectedDateMeetings(meetingsForDate);
       if (meetingsForDate.length > 0) {
@@ -178,12 +170,25 @@ export default function Page() {
     }
   };
 
+  const [isCreating, setIsCreating] = React.useState(false);
+
+  // Helper to refresh all data
+  const refreshDashboard = async () => {
+    await Promise.all([mutateStats(), mutateMeetings()]);
+  };
+
   const handleCreateMeeting = async () => {
     if (!userId) return;
+    if (isCreating) return; // double safety
 
     try {
-      const startDateTime = new Date(`${newMeeting.date}T${newMeeting.startTime}:00`);
-      const endDateTime = new Date(`${newMeeting.date}T${newMeeting.endTime}:00`);
+      setIsCreating(true);
+      const startDateTime = new Date(
+        `${newMeeting.date}T${newMeeting.startTime}:00`,
+      );
+      const endDateTime = new Date(
+        `${newMeeting.date}T${newMeeting.endTime}:00`,
+      );
 
       if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
         toast.error("Invalid date or time selected");
@@ -195,27 +200,51 @@ export default function Page() {
         return;
       }
 
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URI || "http://localhost:4001";
-      const res = await fetch(`${backendUrl}/meetings`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: newMeeting.title,
-          description: newMeeting.description,
-          startTime: startDateTime.toISOString(),
-          endTime: endDateTime.toISOString(),
-          hostId: userId,
-          type: "scheduled"
-        }),
-      });
+      let res;
+      if (editingId) {
+        // UPDATE
+        res = await fetch(`${backendUrl}/meetings/${editingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: newMeeting.title,
+            description: newMeeting.description,
+            startTime: startDateTime.toISOString(),
+            endTime: endDateTime.toISOString(),
+          }),
+        });
+      } else {
+        // CREATE
+        res = await fetch(`${backendUrl}/meetings`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: newMeeting.title,
+            description: newMeeting.description,
+            startTime: startDateTime.toISOString(),
+            endTime: endDateTime.toISOString(),
+            hostId: userId,
+            type: "scheduled",
+          }),
+        });
+      }
 
-      if (!res.ok) throw new Error("Failed to create meeting");
+      if (!res.ok) throw new Error("Failed to save meeting");
 
-      const createdMeeting = await res.json();
-      setMeetings([...meetings, createdMeeting]);
+      // Optimistic or Full Refresh
+      await refreshDashboard();
+
+      if (editingId) {
+        toast.success("Meeting updated!");
+        setEditingId(null);
+      } else {
+        toast.success("Meeting scheduled!", {
+          description: "Email reminders coming soon in a future update.",
+        });
+      }
+
       setShowScheduleDialog(false);
-      toast.success("Meeting scheduled successfully!");
-      
+
       // Reset form
       setNewMeeting({
         title: "",
@@ -224,11 +253,47 @@ export default function Page() {
         startTime: "09:00",
         endTime: "10:00",
       });
-
     } catch (error) {
       toast.error("Failed to schedule meeting");
       console.error(error);
+    } finally {
+      setIsCreating(false);
     }
+  };
+
+  const handleCancelMeeting = async (id: string) => {
+    if (!confirm("Are you sure you want to cancel this meeting?")) return;
+    try {
+      const res = await fetch(`${backendUrl}/meetings/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        await refreshDashboard();
+        toast.success("Meeting cancelled");
+      } else {
+        throw new Error("Failed to cancel");
+      }
+    } catch (e) {
+      toast.error("Could not cancel meeting");
+    }
+  };
+
+  // Editing state
+  const [editingId, setEditingId] = React.useState<string | null>(null);
+
+  const handleEditClick = (meeting: Meeting) => {
+    setEditingId(meeting.id);
+    const start = new Date(meeting.startTime);
+    const end = new Date(meeting.endTime);
+
+    setNewMeeting({
+      title: meeting.title,
+      description: meeting.description || "",
+      date: format(start, "yyyy-MM-dd"), // Assumes single day event for simplicity
+      startTime: format(start, "HH:mm"),
+      endTime: format(end, "HH:mm"),
+    });
+    setShowScheduleDialog(true);
   };
 
   const goToMeet = (identity: "anonymous" | "exposed") => {
@@ -256,7 +321,10 @@ export default function Page() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuItem onClick={() => setShowScheduleDialog(true)} className="gap-3 py-2.5">
+            <DropdownMenuItem
+              onClick={() => setShowScheduleDialog(true)}
+              className="gap-3 py-2.5"
+            >
               <Plus className="size-4 text-muted-foreground" />
               <div className="flex-1">
                 <div className="font-medium text-sm">Schedule Meeting</div>
@@ -265,7 +333,10 @@ export default function Page() {
                 </div>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => goToMeet("anonymous")} className="gap-3 py-2.5">
+            <DropdownMenuItem
+              onClick={() => goToMeet("anonymous")}
+              className="gap-3 py-2.5"
+            >
               <UsersIcon className="size-4 text-muted-foreground" />
               <div className="flex-1">
                 <div className="font-medium text-sm">Anonymous Mode</div>
@@ -274,7 +345,10 @@ export default function Page() {
                 </div>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => goToMeet("exposed")} className="gap-3 py-2.5">
+            <DropdownMenuItem
+              onClick={() => goToMeet("exposed")}
+              className="gap-3 py-2.5"
+            >
               <VideoIcon className="size-4 text-muted-foreground" />
               <div className="flex-1">
                 <div className="font-medium text-sm">Exposed Mode</div>
@@ -294,12 +368,14 @@ export default function Page() {
           {/* Total Meetings Card */}
           <div className="bg-card border border-border/50 rounded-xl p-4 space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Total Meetings</span>
+              <span className="text-sm text-muted-foreground">
+                Total Meetings
+              </span>
               <div className="p-2 bg-primary/10 rounded-lg">
                 <VideoIcon className="size-4 text-primary" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{stats.meetingsCount}</p>
+            <p className="text-2xl font-bold">{stats?.meetingsCount || 0}</p>
             <p className="text-xs text-muted-foreground">All time</p>
           </div>
 
@@ -311,7 +387,9 @@ export default function Page() {
                 <CalendarIcon className="size-4 text-blue-500" />
               </div>
             </div>
-            <p className="text-2xl font-bold">{stats.upcomingMeetingsCount}</p>
+            <p className="text-2xl font-bold">
+              {stats?.upcomingMeetingsCount || 0}
+            </p>
             <p className="text-xs text-muted-foreground">Scheduled meetings</p>
           </div>
 
@@ -323,29 +401,40 @@ export default function Page() {
                 <GlobeIcon className="size-4 text-green-500" />
               </div>
             </div>
-            <p className="text-lg font-semibold truncate" title={userTimezone}>{userTimezone}</p>
+            <p className="text-lg font-semibold truncate" title={userTimezone}>
+              {userTimezone}
+            </p>
             <p className="text-xs text-muted-foreground">Local timezone</p>
           </div>
 
           {/* Next Meeting Card */}
           <div className="bg-card border border-border/50 rounded-xl p-4 space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Next Meeting</span>
+              <span className="text-sm text-muted-foreground">
+                Next Meeting
+              </span>
               <div className="p-2 bg-orange-500/10 rounded-lg">
                 <ClockIcon className="size-4 text-orange-500" />
               </div>
             </div>
             {upcomingMeetings[0] ? (
               <>
-                <p className="text-lg font-semibold truncate">{upcomingMeetings[0].title}</p>
+                <p className="text-lg font-semibold truncate">
+                  {upcomingMeetings[0].title}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  {format(new Date(upcomingMeetings[0].startTime), "MMM d, HH:mm")}
+                  {format(
+                    new Date(upcomingMeetings[0].startTime),
+                    "MMM d, HH:mm",
+                  )}
                 </p>
               </>
             ) : (
               <>
                 <p className="text-lg font-semibold">No meetings</p>
-                <p className="text-xs text-muted-foreground">You're all caught up!</p>
+                <p className="text-xs text-muted-foreground">
+                  You're all caught up!
+                </p>
               </>
             )}
           </div>
@@ -394,19 +483,53 @@ export default function Page() {
             <div className="flex-1 p-4 overflow-y-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {upcomingMeetings.slice(0, 6).map((meeting) => (
-                  <div 
-                    key={meeting.id} 
-                    className="p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border/50"
+                  <div
+                    key={meeting.id}
+                    className="p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-border/50 group relative"
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <p className="font-medium text-sm text-foreground truncate">{meeting.title}</p>
-                      <Badge variant="outline" className="capitalize text-xs shrink-0">
-                        {meeting.type}
-                      </Badge>
+                      <p className="font-medium text-sm text-foreground truncate flex-1">
+                        {meeting.title}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant="outline"
+                          className="capitalize text-xs shrink-0"
+                        >
+                          {meeting.type}
+                        </Badge>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <span className="sr-only">Menu</span>
+                              <ChevronDownIcon className="h-3 w-3" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => handleEditClick(meeting)}
+                            >
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => handleCancelMeeting(meeting.id)}
+                            >
+                              Cancel
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <CalendarIcon className="size-3" />
-                      <span>{format(new Date(meeting.startTime), "MMM d, HH:mm")}</span>
+                      <span>
+                        {format(new Date(meeting.startTime), "MMM d, HH:mm")}
+                      </span>
                       {meeting.participants?.length > 0 && (
                         <>
                           <span className="text-border">•</span>
@@ -419,7 +542,9 @@ export default function Page() {
                 ))}
                 {upcomingMeetings.length === 0 && (
                   <div className="col-span-2 text-center py-8">
-                    <p className="text-sm text-muted-foreground">No upcoming meetings</p>
+                    <p className="text-sm text-muted-foreground">
+                      No upcoming meetings
+                    </p>
                   </div>
                 )}
               </div>
@@ -440,7 +565,8 @@ export default function Page() {
                 })}
               </h3>
               <Badge variant="secondary" className="text-xs">
-                {selectedDateMeetings.length} meeting{selectedDateMeetings.length !== 1 ? "s" : ""}
+                {selectedDateMeetings.length} meeting
+                {selectedDateMeetings.length !== 1 ? "s" : ""}
               </Badge>
             </div>
             <div className="p-4">
@@ -450,9 +576,12 @@ export default function Page() {
                     key={meeting.id}
                     className="p-4 bg-muted/50 border border-border/50 rounded-lg hover:bg-muted transition-colors"
                   >
-                    <p className="font-medium text-sm text-foreground truncate mb-1">{meeting.title}</p>
+                    <p className="font-medium text-sm text-foreground truncate mb-1">
+                      {meeting.title}
+                    </p>
                     <p className="text-muted-foreground text-xs mb-2">
-                      {format(new Date(meeting.startTime), "HH:mm")} - {format(new Date(meeting.endTime), "HH:mm")}
+                      {format(new Date(meeting.startTime), "HH:mm")} -{" "}
+                      {format(new Date(meeting.endTime), "HH:mm")}
                     </p>
                     <Badge variant="outline" className="capitalize text-xs">
                       {meeting.type}
@@ -469,10 +598,10 @@ export default function Page() {
       <Dialog open={showMeetingDetails} onOpenChange={setShowMeetingDetails}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Meetings on {selectedDate?.toLocaleDateString()}</DialogTitle>
-            <DialogDescription>
-              Details for selected date
-            </DialogDescription>
+            <DialogTitle>
+              Meetings on {selectedDate?.toLocaleDateString()}
+            </DialogTitle>
+            <DialogDescription>Details for selected date</DialogDescription>
           </DialogHeader>
           <div className="space-y-3 max-h-[400px] overflow-y-auto">
             {selectedDateMeetings.length > 0 ? (
@@ -488,25 +617,61 @@ export default function Page() {
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {format(new Date(meeting.startTime), "HH:mm")} - {format(new Date(meeting.endTime), "HH:mm")}
+                    {format(new Date(meeting.startTime), "HH:mm")} -{" "}
+                    {format(new Date(meeting.endTime), "HH:mm")}
                   </p>
-                  {meeting.description && <p className="text-xs text-muted-foreground">{meeting.description}</p>}
+                  {meeting.description && (
+                    <p className="text-xs text-muted-foreground">
+                      {meeting.description}
+                    </p>
+                  )}
                 </div>
               ))
             ) : (
-              <p className="text-sm text-muted-foreground">No meetings scheduled</p>
+              <p className="text-sm text-muted-foreground">
+                No meetings scheduled
+              </p>
             )}
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Schedule Meeting Dialog */}
-      <Dialog open={showScheduleDialog} onOpenChange={setShowScheduleDialog}>
+      <Dialog
+        open={showScheduleDialog}
+        onOpenChange={(open) => {
+          setShowScheduleDialog(open);
+          if (!open) {
+            setEditingId(null);
+            setNewMeeting({
+              title: "",
+              description: "",
+              date: format(new Date(), "yyyy-MM-dd"),
+              startTime: format(
+                new Date(
+                  new Date().setHours(new Date().getHours() + 1, 0, 0, 0),
+                ),
+                "HH:mm",
+              ),
+              endTime: format(
+                new Date(
+                  new Date().setHours(new Date().getHours() + 2, 0, 0, 0),
+                ),
+                "HH:mm",
+              ),
+            });
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Schedule Meeting</DialogTitle>
+            <DialogTitle>
+              {editingId ? "Edit Meeting" : "Schedule Meeting"}
+            </DialogTitle>
             <DialogDescription>
-              Create a new scheduled meeting.
+              {editingId
+                ? "Update meeting details."
+                : "Create a new scheduled meeting."}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -515,7 +680,9 @@ export default function Page() {
               <Input
                 id="title"
                 value={newMeeting.title}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewMeeting({ ...newMeeting, title: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setNewMeeting({ ...newMeeting, title: e.target.value })
+                }
                 placeholder="Team Sync"
               />
             </div>
@@ -524,7 +691,9 @@ export default function Page() {
               <Textarea
                 id="description"
                 value={newMeeting.description}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewMeeting({ ...newMeeting, description: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  setNewMeeting({ ...newMeeting, description: e.target.value })
+                }
                 placeholder="Meeting agenda..."
               />
             </div>
@@ -535,18 +704,22 @@ export default function Page() {
                   id="date"
                   type="date"
                   value={newMeeting.date}
-                  onChange={(e) => setNewMeeting({ ...newMeeting, date: e.target.value })}
+                  onChange={(e) =>
+                    setNewMeeting({ ...newMeeting, date: e.target.value })
+                  }
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-               <div className="grid gap-2">
+              <div className="grid gap-2">
                 <Label htmlFor="startTime">Start Time</Label>
                 <Input
                   id="startTime"
                   type="time"
                   value={newMeeting.startTime}
-                  onChange={(e) => setNewMeeting({ ...newMeeting, startTime: e.target.value })}
+                  onChange={(e) =>
+                    setNewMeeting({ ...newMeeting, startTime: e.target.value })
+                  }
                 />
               </div>
               <div className="grid gap-2">
@@ -555,14 +728,31 @@ export default function Page() {
                   id="endTime"
                   type="time"
                   value={newMeeting.endTime}
-                  onChange={(e) => setNewMeeting({ ...newMeeting, endTime: e.target.value })}
+                  onChange={(e) =>
+                    setNewMeeting({ ...newMeeting, endTime: e.target.value })
+                  }
                 />
               </div>
             </div>
           </div>
           <DialogFooter>
-             <Button variant="outline" onClick={() => setShowScheduleDialog(false)}>Cancel</Button>
-             <Button onClick={handleCreateMeeting}>Schedule</Button>
+            <Button
+              variant="outline"
+              onClick={() => setShowScheduleDialog(false)}
+              disabled={isCreating}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleCreateMeeting} disabled={isCreating}>
+              {isCreating ? (
+                <>
+                  <span className="w-4 h-4 mr-2 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  Scheduling...
+                </>
+              ) : (
+                "Schedule"
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
