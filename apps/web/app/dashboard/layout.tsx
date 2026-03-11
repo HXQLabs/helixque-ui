@@ -4,6 +4,11 @@ import { useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { CommandMenu } from "@/components/command-menu";
 import {
+  FullscreenProvider,
+  useFullscreen,
+} from "@/contexts/fullscreen-context";
+import { CallProvider } from "@/contexts/call-context";
+import {
   NavigationProvider,
   useNavigation,
 } from "@/contexts/navigation-context";
@@ -27,6 +32,7 @@ import * as Tour from "@workspace/ui/components/tour";
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { activeSection, activeSubSection } = useNavigation();
   const [tourOpen, setTourOpen] = useState(false);
+  const { isFullscreen } = useFullscreen();
 
   return (
     <>
@@ -82,43 +88,49 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
       </Tour.Root>
 
       <SidebarInset>
-        <header
-          className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12"
-          id="dashboard-header"
-        >
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" id="sidebar-trigger" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Breadcrumb id="breadcrumb">
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">{activeSection}</BreadcrumbLink>
-                </BreadcrumbItem>
-                {activeSubSection && (
-                  <>
-                    <BreadcrumbSeparator className="hidden md:block" />
-                    <BreadcrumbItem>
-                      <BreadcrumbPage>{activeSubSection}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                  </>
-                )}
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="ml-auto mr-4"
-            onClick={() => setTourOpen(true)}
+        {!isFullscreen && (
+          <header
+            className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12"
+            id="dashboard-header"
           >
-            Start Tour
-          </Button>
-        </header>
+            <div className="flex items-center gap-2 px-4">
+              <SidebarTrigger className="-ml-1" id="sidebar-trigger" />
+              <Separator
+                orientation="vertical"
+                className="mr-2 data-[orientation=vertical]:h-4"
+              />
+              <Breadcrumb id="breadcrumb">
+                <BreadcrumbList>
+                  <BreadcrumbItem className="hidden md:block">
+                    <BreadcrumbLink href="#">{activeSection}</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  {activeSubSection && (
+                    <>
+                      <BreadcrumbSeparator className="hidden md:block" />
+                      <BreadcrumbItem>
+                        <BreadcrumbPage>{activeSubSection}</BreadcrumbPage>
+                      </BreadcrumbItem>
+                    </>
+                  )}
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-auto mr-4"
+              onClick={() => setTourOpen(true)}
+            >
+              Start Tour
+            </Button>
+          </header>
+        )}
         <div
-          className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-auto"
+          className={
+            isFullscreen
+              ? "fixed inset-0 z-50 flex flex-col overflow-hidden bg-black"
+              : "flex flex-1 flex-col gap-4 p-4 pt-0 overflow-auto"
+          }
           id="dashboard-content"
         >
           {children}
@@ -131,11 +143,15 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <NavigationProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <DashboardLayout>{children}</DashboardLayout>
-        <CommandMenu />
-      </SidebarProvider>
+      <CallProvider>
+        <FullscreenProvider>
+          <SidebarProvider>
+            <AppSidebar />
+            <DashboardLayout>{children}</DashboardLayout>
+            <CommandMenu />
+          </SidebarProvider>
+        </FullscreenProvider>
+      </CallProvider>
     </NavigationProvider>
   );
 }

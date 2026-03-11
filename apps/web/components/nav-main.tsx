@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
 import { useNavigation } from "@/contexts/navigation-context";
 
 import {
@@ -34,6 +35,23 @@ export function NavMain({
   }[];
 }) {
   const { activeSection, activeSubSection, setActiveSection } = useNavigation();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleSubItemClick = (
+    parentTitle: string,
+    subTitle: string,
+    url: string,
+  ) => {
+    setActiveSection(parentTitle, subTitle);
+    // If the sub-item has a real route, navigate there
+    if (url && url !== "#") {
+      router.push(url);
+    } else if (pathname !== "/dashboard") {
+      // Otherwise navigate back to dashboard
+      router.push("/dashboard");
+    }
+  };
 
   return (
     <SidebarGroup>
@@ -64,7 +82,11 @@ export function NavMain({
                           activeSubSection === subItem.title
                         }
                         onClick={() =>
-                          setActiveSection(item.title, subItem.title)
+                          handleSubItemClick(
+                            item.title,
+                            subItem.title,
+                            subItem.url,
+                          )
                         }
                       >
                         <span>{subItem.title}</span>

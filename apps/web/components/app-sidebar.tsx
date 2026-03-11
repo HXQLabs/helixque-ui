@@ -4,8 +4,8 @@ import * as React from "react";
 import Image from "next/image";
 import {
   AudioWaveform,
+  Blocks,
   BookOpen,
-  Bot,
   Command,
   Frame,
   Map,
@@ -16,7 +16,7 @@ import {
   Award,
   PieChart,
   Settings2,
-  SquareTerminal,
+  Trophy,
   Zap,
 } from "lucide-react";
 
@@ -63,40 +63,40 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Collaboration",
       url: "#",
-      icon: SquareTerminal,
+      icon: Blocks,
       isActive: true,
       items: [
         {
+          title: "Whiteboard",
+          url: "/dashboard/whiteboard",
+        },
+        {
+          title: "Brainstorm Room",
+          url: "#",
+        },
+        {
           title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
           url: "#",
         },
       ],
     },
     {
-      title: "Models",
+      title: "Achievements",
       url: "#",
-      icon: Bot,
+      icon: Trophy,
       items: [
         {
-          title: "Genesis",
+          title: "Helix Points",
           url: "#",
         },
         {
-          title: "Explorer",
+          title: "Badges",
           url: "#",
         },
         {
-          title: "Quantum",
+          title: "Streaks",
           url: "#",
         },
       ],
@@ -199,7 +199,7 @@ const data = {
   connect: [
     {
       title: "Anonymous Connect",
-      url: "#",
+      url: "/dashboard/anonymous-connect",
       icon: Heart,
       badge: 0,
     },

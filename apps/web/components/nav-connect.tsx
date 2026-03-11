@@ -1,6 +1,7 @@
 "use client";
 
 import { type LucideIcon } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@workspace/ui/components/badge";
 
 import {
@@ -34,10 +35,10 @@ export function NavConnect({
               tooltip={item.title}
               className="cursor-pointer"
             >
-              <a href={item.url}>
+              <Link href={item.url}>
                 <item.icon className="size-4" />
                 <span>{item.title}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
