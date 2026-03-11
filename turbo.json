@@ -10,7 +10,7 @@
     "web#build": {
       "dependsOn": ["^build"],
       "env": ["SOME_OTHER_ENV_VAR"],
-      "outputs": [".next/**", "!.next/cache/**",".dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", ".dist/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -24,4 +24,3 @@
     }
   }
 }
-

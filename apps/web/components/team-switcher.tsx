@@ -18,6 +18,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
+import { useHelixque } from "@workspace/state";
 
 export function TeamSwitcher({
   teams,
@@ -29,7 +30,10 @@ export function TeamSwitcher({
   }[];
 }) {
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
+  const { setActiveTeam, activeTeam } = useHelixque();
+  React.useEffect(() => {
+    setActiveTeam(teams[0] ?? null);
+  }, [teams, setActiveTeam]);
 
   if (!activeTeam) {
     return null;

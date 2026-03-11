@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { CommandMenu } from "@/components/command-menu";
 import {
@@ -28,10 +27,11 @@ import {
   SidebarTrigger,
 } from "@workspace/ui/components/sidebar";
 import * as Tour from "@workspace/ui/components/tour";
+import { useHelixque } from "@workspace/state";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { activeSection, activeSubSection } = useNavigation();
-  const [tourOpen, setTourOpen] = useState(false);
+  const { tourOpen, setTourOpen } = useHelixque();
   const { isFullscreen } = useFullscreen();
 
   return (

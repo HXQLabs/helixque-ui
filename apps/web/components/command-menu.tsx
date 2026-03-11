@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import {
   Calculator,
   Calendar,
@@ -22,11 +21,10 @@ import {
   CommandShortcut,
 } from "@workspace/ui/components/command";
 import { SettingsDialog } from "./settings-dialog";
+import { useHelixque } from "@workspace/state";
 
 export function CommandMenu() {
-  const [open, setOpen] = React.useState(false);
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
-  const router = useRouter();
+  const { open, settingsOpen, setOpen, setSettingsOpen } = useHelixque();
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {

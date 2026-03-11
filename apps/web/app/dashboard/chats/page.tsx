@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { MessageCircle, Search, Send } from "lucide-react";
 import {
   Avatar,
@@ -10,6 +10,7 @@ import {
 } from "@workspace/ui/components/avatar";
 import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
+import { useHelixque } from "@workspace/state";
 
 // Generate mock chats with proper avatars and data like friends page
 const generateMockChats = () => {
@@ -198,15 +199,22 @@ const generateMockChats = () => {
 const allChats = generateMockChats();
 
 export default function ChatsPage() {
-  const [selectedChat, setSelectedChat] = useState<(typeof allChats)[0] | null>(
-    null,
-  );
-  const [displayedChats, setDisplayedChats] = useState<typeof allChats>(
-    allChats.slice(0, 10),
-  );
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [loadingOlderMessages, setLoadingOlderMessages] = useState(false);
+  const {
+    loadingOlderMessages,
+    searchQuery,
+    isLoadingMore,
+    selectedChat,
+    displayedChats,
+    setLoadingOlderMessages,
+    setSearchQuery,
+    setIsLoadingMore,
+    setSelectedChat,
+    setDisplayedChats,
+  } = useHelixque();
+
+  useEffect(() => {
+    setDisplayedChats(allChats.slice(0, 10));
+  }, [setDisplayedChats]);
   const chatListRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
   const loadMoreTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -388,7 +396,7 @@ export default function ChatsPage() {
                   </div>
                 </div>
               )}
-              {selectedChat.messages.map((message) => (
+              {selectedChat?.messages.map((message: any) => (
                 <div
                   key={message.id}
                   className={`flex ${

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useNavigation } from "@/contexts/navigation-context";
 import {
   IconPhoneCall,
@@ -34,6 +34,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import { useHelixque } from "@workspace/state";
 
 function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
   return (
@@ -367,10 +368,16 @@ function FriendCard({ friend, type, onAction }: FriendCardProps) {
 
 export default function FriendsPage() {
   const { setActiveSection } = useNavigation();
-  const [activeTab, setActiveTab] = useState<TabType>("friends");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    activeTab,
+    searchQuery,
+    currentPage,
+    isLoading,
+    setActiveTab,
+    setSearchQuery,
+    setCurrentPage,
+    setIsLoading,
+  } = useHelixque();
   const itemsPerPage = 6;
 
   React.useEffect(() => {

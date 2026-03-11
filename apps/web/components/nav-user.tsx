@@ -32,6 +32,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
+import { useHelixque } from "@workspace/state";
 
 export function NavUser({
   user,
@@ -43,7 +44,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const { settingsOpen, setSettingsOpen } = useHelixque();
 
   return (
     <SidebarMenu>

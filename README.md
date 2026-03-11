@@ -54,11 +54,22 @@ pnpm install
 
 3. **Start development servers**
 
-```bash
+````bash
 # Start development server
 pnpm dev
 
-```
+<<<<<<< HEAD
+=======
+Your `tailwind.config.ts` and `globals.css` are already set up to use the components from the `ui` package.
+
+## Using components
+
+To use the components in your app, import them from the `ui` package.
+
+```tsx
+import { Button } from "@workspace/ui/components/button";
+>>>>>>> 1df1b70f8aadd40efe3ce53ce63520e9572310c0
+````
 
 Open your browser at `http://localhost:3000` and allow camera/microphone access. 🎉
 
