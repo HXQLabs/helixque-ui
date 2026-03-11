@@ -69,12 +69,6 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile();
   const { openMobile, _open, setOpenMobile, _setOpen } = useHelixque();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
-  React.useEffect(() => {
-    if (defaultOpen === false) {
-      setOpen(false);
-    }
-  }, []);
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
@@ -93,6 +87,12 @@ function SidebarProvider({
     },
     [setOpenProp, open, _setOpen],
   );
+
+  React.useEffect(() => {
+    if (defaultOpen === false) {
+      setOpen(false);
+    }
+  }, [defaultOpen, setOpen]);
 
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
