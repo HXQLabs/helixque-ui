@@ -852,7 +852,7 @@ function TourRootImpl(props: TourRootImplProps) {
       portal,
       onPortalChange: setPortal,
     }),
-    [portal],
+    [portal, setPortal],
   );
 
   useScrollLock(open && modal);
@@ -1067,7 +1067,7 @@ function TourStep(props: TourStepProps) {
       onArrowChange: setArrow,
       onFooterChange: setFooter,
     }),
-    [arrowX, arrowY, placedSide, placedAlign, cannotCenterArrow],
+    [arrowX, arrowY, placedSide, placedAlign, cannotCenterArrow, setArrow, setFooter],
   );
 
   React.useEffect(() => {

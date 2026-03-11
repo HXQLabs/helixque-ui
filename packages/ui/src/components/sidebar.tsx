@@ -69,6 +69,7 @@ function SidebarProvider({
 }) {
   const isMobile = useIsMobile();
   const { openMobile, _open, setOpenMobile, _setOpen } = useHelixque();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
   React.useEffect(() => {
     if (defaultOpen === false) {
       setOpen(false);
@@ -90,7 +91,7 @@ function SidebarProvider({
       // This sets the cookie to keep the sidebar state.
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
     },
-    [setOpenProp, open],
+    [setOpenProp, open, _setOpen],
   );
 
   // Helper to toggle the sidebar.
