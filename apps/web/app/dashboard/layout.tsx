@@ -166,7 +166,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                 className="mr-2 data-[orientation=vertical]:h-4"
               />
               <Breadcrumb id="breadcrumb">
-                <BreadcrumbList>
+                <BreadcrumbList className="transition-all duration-300 ease-in-out">
                   <BreadcrumbItem className="hidden md:block">
                     <BreadcrumbLink href="#">{activeSection}</BreadcrumbLink>
                   </BreadcrumbItem>

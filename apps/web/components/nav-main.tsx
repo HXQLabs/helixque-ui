@@ -1,8 +1,8 @@
 "use client";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
-import { useNavigation } from "@/contexts/navigation-context";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import {
   Collapsible,
@@ -34,70 +34,66 @@ export function NavMain({
     }[];
   }[];
 }) {
-  const { activeSection, activeSubSection, setActiveSection } = useNavigation();
-  const router = useRouter();
   const pathname = usePathname();
-
-  const handleSubItemClick = (
-    parentTitle: string,
-    subTitle: string,
-    url: string,
-  ) => {
-    setActiveSection(parentTitle, subTitle);
-    // If the sub-item has a real route, navigate there
-    if (url && url !== "#") {
-      router.push(url);
-    } else if (pathname !== "/dashboard") {
-      // Otherwise navigate back to dashboard
-      router.push("/dashboard");
-    }
-  };
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible
-            key={item.title}
-            asChild
-            defaultOpen={item.title === activeSection}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton
-                        isActive={
-                          activeSection === item.title &&
-                          activeSubSection === subItem.title
-                        }
-                        onClick={() =>
-                          handleSubItemClick(
-                            item.title,
-                            subItem.title,
-                            subItem.url,
-                          )
-                        }
-                      >
-                        <span>{subItem.title}</span>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </SidebarMenuItem>
-          </Collapsible>
-        ))}
+        {items.map((item) => {
+          // A parent section is open if any of its sub-items match the pathname
+          const hasActiveChild = item.items?.some(
+            (sub) => sub.url !== "#" && pathname.startsWith(sub.url),
+          );
+
+          return (
+            <Collapsible
+              key={item.title}
+              asChild
+              defaultOpen={hasActiveChild || item.isActive}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton
+                    tooltip={item.title}
+                    className="transition-colors duration-200"
+                  >
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-300 ease-in-out group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items?.map((subItem) => {
+                      const isSubActive =
+                        subItem.url !== "#" && pathname.startsWith(subItem.url);
+
+                      return (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton
+                            asChild={subItem.url !== "#"}
+                            isActive={isSubActive}
+                            className="transition-colors duration-200"
+                          >
+                            {subItem.url !== "#" ? (
+                              <Link href={subItem.url}>
+                                <span>{subItem.title}</span>
+                              </Link>
+                            ) : (
+                              <span>{subItem.title}</span>
+                            )}
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      );
+                    })}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

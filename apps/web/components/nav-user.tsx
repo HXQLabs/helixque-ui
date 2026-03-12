@@ -9,9 +9,11 @@ import {
   LogOut,
   Settings,
   Sparkles,
+  Zap,
   UserIcon,
 } from "lucide-react";
 import { SettingsDialog } from "./settings-dialog";
+import { UpgradeModal } from "./upgrade-modal";
 
 import {
   Avatar,
@@ -45,6 +47,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [upgradeOpen, setUpgradeOpen] = React.useState(false);
 
   return (
     <SidebarMenu>
@@ -86,11 +89,12 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem asChild>
-                <Link href="/dashboard/upgrade" className="w-full cursor-pointer">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Upgrade to Pro
-                </Link>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={() => setUpgradeOpen(true)}
+              >
+                <Zap className="mr-2 h-4 w-4" />
+                Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -135,6 +139,7 @@ export function NavUser({
         </DropdownMenu>
       </SidebarMenuItem>
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <UpgradeModal open={upgradeOpen} onOpenChange={setUpgradeOpen} />
     </SidebarMenu>
   );
 }

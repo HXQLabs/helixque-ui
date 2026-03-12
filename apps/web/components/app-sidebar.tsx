@@ -1,5 +1,6 @@
 "use client";
 
+
 import * as React from "react";
 import Image from "next/image";
 import {
@@ -12,7 +13,7 @@ import {
   MessageCircle,
   Users,
   Heart,
-  Handshake,
+  Link as LinkIcon,
   Award,
   PieChart,
   Settings2,
@@ -21,7 +22,6 @@ import {
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProFeatures } from "@/components/nav-pro-features";
 import { NavSocials } from "@/components/nav-socials";
 import { NavConnect } from "@/components/nav-connect";
 import { NavUser } from "@/components/nav-user";
@@ -165,23 +165,7 @@ const data = {
       icon: Map,
     },
   ],
-  proFeatures: [
-    {
-      title: "Upgrade Plan",
-      url: "#",
-      icon: Zap,
-    },
-    {
-      title: "Advanced Settings",
-      url: "#",
-      icon: Settings2,
-    },
-    {
-      title: "AI Assistant",
-      url: "#",
-      icon: Zap,
-    },
-  ],
+
   socials: [
     {
       title: "Friends",
@@ -198,15 +182,9 @@ const data = {
   ],
   connect: [
     {
-      title: "Anonymous Connect",
+      title: "Connect",
       url: "/dashboard/anonymous-connect",
-      icon: Heart,
-      badge: 0,
-    },
-    {
-      title: "Professional Connect",
-      url: "#",
-      icon: Handshake,
+      icon: LinkIcon,
       badge: 0,
     },
     {
@@ -220,50 +198,50 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        {/* Single Profile Display - Future: Will replace with ProfileSwitcher for multiple profiles */}
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="#">
-                <div className="bg-sidebar text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  {/* <GalleryVerticalEnd className="size-4" /> */}
-                  <Image
-                    src="https://www.helixque.com/logo.svg"
-                    alt="Helixque Logo"
-                    width={32}
-                    height={32}
-                  />
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">Helixque</span>
-                  <span className="text-xs">Company</span>
-                </div>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+      <Sidebar collapsible="icon" {...props}>
+        <SidebarHeader>
+          {/* Single Profile Display - Future: Will replace with ProfileSwitcher for multiple profiles */}
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" asChild>
+                <a href="#">
+                  <div className="bg-sidebar text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                    {/* <GalleryVerticalEnd className="size-4" /> */}
+                    <Image
+                      src="https://www.helixque.com/logo.svg"
+                      alt="Helixque Logo"
+                      width={32}
+                      height={32}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-0.5 leading-none">
+                    <span className="font-semibold">Helixque</span>
+                    <span className="text-xs">Company</span>
+                  </div>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
 
-        {/* TODO: Implement ProfileSwitcher component for multiple profile/organization switching
-        <ProfileSwitcher profiles={data.profiles} currentProfile={data.currentProfile} />
-        */}
+          {/* TODO: Implement ProfileSwitcher component for multiple profile/organization switching
+          <ProfileSwitcher profiles={data.profiles} currentProfile={data.currentProfile} />
+          */}
 
-        {/* Original TeamSwitcher implementation - Keep for reference
-        <TeamSwitcher teams={data.teams} />
-        */}
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        {/* <NavProjects projects={data.projects} /> */}
-        <NavProFeatures features={data.proFeatures} />
-        <NavSocials items={data.socials} />
-        <NavConnect items={data.connect} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+          {/* Original TeamSwitcher implementation - Keep for reference
+          <TeamSwitcher teams={data.teams} />
+          */}
+        </SidebarHeader>
+        <SidebarContent>
+          <NavMain items={data.navMain} />
+          {/* <NavProjects projects={data.projects} /> */}
+          <NavSocials items={data.socials} />
+          <NavConnect items={data.connect} />
+
+        </SidebarContent>
+        <SidebarFooter>
+          <NavUser user={data.user} />
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
   );
 }
