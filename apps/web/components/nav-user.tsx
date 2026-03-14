@@ -11,6 +11,7 @@ import {
   Sparkles,
   Zap,
   UserIcon,
+  UserPen,
 } from "lucide-react";
 import { SettingsDialog } from "./settings-dialog";
 import { UpgradeModal } from "./upgrade-modal";
@@ -100,9 +101,15 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup> 
               <DropdownMenuItem asChild>
-                <Link href="/dashboard/edit-profile" className="w-full cursor-pointer">
+                <Link href="/dashboard/profile" className="w-full cursor-pointer">
                   <UserIcon className="mr-2 h-4 w-4" />
-                  Profile
+                  View Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/edit-profile" className="w-full cursor-pointer">
+                  <UserPen className="mr-2 h-4 w-4" />
+                  Edit Profile
                 </Link>
               </DropdownMenuItem>
                <DropdownMenuItem asChild>

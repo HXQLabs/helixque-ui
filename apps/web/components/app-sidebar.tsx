@@ -19,6 +19,7 @@ import {
   Settings2,
   Trophy,
   Zap,
+  Search,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -188,8 +189,14 @@ const data = {
       badge: 0,
     },
     {
+      title: "Explore",
+      url: "/dashboard/professional",
+      icon: Search,
+      badge: 0,
+    },
+    {
       title: "Join as a Mentor",
-      url: "#",
+      url: "/dashboard/join-mentor",
       icon: Award,
       badge: 0,
     },

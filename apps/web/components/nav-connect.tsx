@@ -1,8 +1,8 @@
 "use client";
 
-import { type LucideIcon } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import {
+  type LucideIcon,
+} from "lucide-react";
 
 import {
   SidebarGroup,
@@ -11,6 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
+import Link from "next/link";
 
 export function NavConnect({
   items,
@@ -22,32 +23,21 @@ export function NavConnect({
     badge?: number;
   }[];
 }) {
-  const pathname = usePathname();
-
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">
-        Connect
-      </SidebarGroupLabel>
+      <SidebarGroupLabel>Connect</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
-          const isActive = item.url !== "#" && pathname.startsWith(item.url);
-          return (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                asChild
-                isActive={isActive}
-                tooltip={item.title}
-                className="cursor-pointer transition-colors duration-200"
-              >
-                <Link href={item.url}>
-                  <item.icon className="size-4" />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          );
-        })}
+        {items.map((item) => (
+          <SidebarMenuItem key={item.title}>
+            <SidebarMenuButton asChild tooltip={item.title}>
+              <Link href={item.url}>
+                <item.icon />
+                <span>{item.title}</span>
+                {item.badge != undefined && item.badge > 0 && <span className="ml-auto text-xs">{item.badge}</span>}
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
       </SidebarMenu>
     </SidebarGroup>
   );
