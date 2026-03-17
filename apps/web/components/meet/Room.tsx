@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { io, type Socket } from "socket.io-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -69,6 +69,8 @@ export default function Room({
     timeoutMessage,
     setTimeoutMessage,
   } = roomState;
+
+  const [showExcalidraw, setShowExcalidraw] = React.useState(false);
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
@@ -838,6 +840,7 @@ export default function Room({
             localScreenShareRef={localScreenShareRef}
             remoteScreenShareRef={remoteScreenShareRef}
             showChat={showChat}
+            showExcalidraw={showExcalidraw}
             lobby={lobby}
             status={status}
             name={name}
@@ -869,10 +872,22 @@ export default function Room({
       <ControlBar
         mediaState={mediaState}
         showChat={showChat}
+        showExcalidraw={showExcalidraw}
         onToggleMic={toggleMic}
         onToggleCam={toggleCam}
         onToggleScreenShare={toggleScreenShare}
-        onToggleChat={() => setShowChat((value) => !value)}
+        onToggleChat={() => {
+          setShowChat((value) => {
+            if (!value) setShowExcalidraw(false);
+            return !value;
+          });
+        }}
+        onToggleExcalidraw={() => {
+          setShowExcalidraw((value) => {
+            if (!value) setShowChat(false);
+            return !value;
+          });
+        }}
         onRecheck={handleRecheck}
         onNext={handleNext}
         onLeave={handleLeave}

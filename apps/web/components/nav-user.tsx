@@ -1,12 +1,14 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
   CreditCard,
   LogOut,
+  Palette,
   Settings,
   Sparkles,
   Zap,
@@ -36,6 +38,35 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
+/* ── Inline theme selector row ── */
+function ThemeSubMenu() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
+  return (
+    <div
+      className="flex items-center justify-between px-2 py-1.5"
+    >
+      <div className="flex items-center gap-2 text-sm">
+        <Palette className="h-4 w-4" />
+        <span>Theme</span>
+      </div>
+      <select
+        value={theme}
+        onChange={(e) => setTheme(e.target.value)}
+        className="cursor-pointer rounded-md border border-border bg-background px-2 py-1 text-xs font-medium text-foreground outline-none focus:ring-1 focus:ring-ring"
+      >
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </div>
+  );
+}
+
 
 export function NavUser({
   user,
@@ -137,6 +168,8 @@ export function NavUser({
                  </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <ThemeSubMenu />
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <LogOut />

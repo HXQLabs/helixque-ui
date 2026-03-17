@@ -13,6 +13,7 @@ import {
   IconVideo,
   IconVideoOff,
 } from "@tabler/icons-react";
+import { PenTool } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import {
   Tooltip,
@@ -25,10 +26,12 @@ import type { MediaState } from "./VideoGrid";
 type ControlBarProps = {
   mediaState: MediaState;
   showChat: boolean;
+  showExcalidraw?: boolean;
   onToggleMic: () => void;
   onToggleCam: () => void;
   onToggleScreenShare: () => void;
   onToggleChat: () => void;
+  onToggleExcalidraw?: () => void;
   onRecheck: () => void;
   onNext: () => void;
   onLeave: () => void;
@@ -38,10 +41,12 @@ type ControlBarProps = {
 export default function ControlBar({
   mediaState,
   showChat,
+  showExcalidraw = false,
   onToggleMic,
   onToggleCam,
   onToggleScreenShare,
   onToggleChat,
+  onToggleExcalidraw,
   onRecheck,
   onNext,
   onLeave,
@@ -49,12 +54,12 @@ export default function ControlBar({
 }: ControlBarProps) {
   const { micOn, camOn, screenShareOn } = mediaState;
 
-  const iconButtonClass = "rounded-full h-11 w-11";
+  const iconButtonClass = "rounded-full h-11 w-11 transition-all duration-200";
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 h-20">
       <div className="relative flex h-full items-center justify-center">
-        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/60 px-2 py-1.5 backdrop-blur">
+        <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 px-2.5 py-2 backdrop-blur-xl shadow-2xl shadow-black/40">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -89,7 +94,7 @@ export default function ControlBar({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {micOn ? "Turn off microphone" : "Turn on microphone"}
+              {micOn ? "Mute (M)" : "Unmute (M)"}
             </TooltipContent>
           </Tooltip>
 
@@ -113,7 +118,7 @@ export default function ControlBar({
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {camOn ? "Turn off camera" : "Turn on camera"}
+              {camOn ? "Turn off camera (V)" : "Turn on camera (V)"}
             </TooltipContent>
           </Tooltip>
 
@@ -125,7 +130,7 @@ export default function ControlBar({
                 size="icon-lg"
                 className={`${iconButtonClass} ${
                   screenShareOn
-                    ? "bg-blue-600 text-white hover:bg-blue-500"
+                    ? "bg-blue-600 text-white hover:bg-blue-500 ring-2 ring-blue-400/30"
                     : "bg-white/10 text-white hover:bg-white/20"
                 }`}
               >
@@ -160,7 +165,7 @@ export default function ControlBar({
               <Button
                 onClick={onLeave}
                 variant="destructive"
-                className="flex h-11 items-center gap-2 rounded-full px-6"
+                className="flex h-11 items-center gap-2 rounded-full px-6 shadow-lg shadow-red-900/20"
               >
                 <IconPhoneOff className="h-5 w-5" />
                 <span className="hidden text-sm font-medium sm:inline">
@@ -173,7 +178,29 @@ export default function ControlBar({
         </div>
 
         <div className="absolute right-6">
-          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/60 px-2 py-1.5 backdrop-blur">
+          <div className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/60 px-2 py-1.5 backdrop-blur-xl">
+            {onToggleExcalidraw && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={onToggleExcalidraw}
+                    variant="ghost"
+                    size="icon-lg"
+                    className={`${iconButtonClass} ${
+                      showExcalidraw
+                        ? "bg-amber-500 text-white hover:bg-amber-600 ring-2 ring-amber-400/30"
+                        : "bg-white/10 text-white hover:bg-white/20"
+                    }`}
+                  >
+                    <PenTool className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {showExcalidraw ? "Close whiteboard" : "Open whiteboard"}
+                </TooltipContent>
+              </Tooltip>
+            )}
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -182,7 +209,7 @@ export default function ControlBar({
                   size="icon-lg"
                   className={`${iconButtonClass} ${
                     showChat
-                      ? "bg-indigo-600 text-white hover:bg-indigo-500"
+                      ? "bg-indigo-600 text-white hover:bg-indigo-500 ring-2 ring-indigo-400/30"
                       : "bg-white/10 text-white hover:bg-white/20"
                   }`}
                 >
